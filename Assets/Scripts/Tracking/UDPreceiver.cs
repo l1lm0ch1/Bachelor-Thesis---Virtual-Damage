@@ -30,10 +30,11 @@ public class UDPReceiver : MonoBehaviour
 
     // Stats
     private int messagesReceived = 0;
-    private float lastMessageTime = 0f;
 
     void Start()
     {
+        UnityMainThreadDispatcher.Instance();
+
         StartUDPListener();
     }
 
@@ -111,7 +112,6 @@ public class UDPReceiver : MonoBehaviour
                 lock (this)
                 {
                     messagesReceived++;
-                    lastMessageTime = Time.time;
                 }
 
                 // Event auf Main Thread via Dispatcher
@@ -147,10 +147,10 @@ public class UDPReceiver : MonoBehaviour
     {
         if (showDebugLogs)
         {
-            GUILayout.BeginArea(new Rect(10, 10, 300, 100));
+            GUILayout.BeginArea(new Rect(10, 10, 300, 80));
             GUILayout.Label($"UDP Port: {port}");
             GUILayout.Label($"Messages: {messagesReceived}");
-            GUILayout.Label($"Last Message: {(Time.time - lastMessageTime < 1f ? "AKTIV" : "INAKTIV")}");
+            GUILayout.Label($"Status: {(isRunning ? "RUNNING" : "STOPPED")}");
             GUILayout.EndArea();
         }
     }
