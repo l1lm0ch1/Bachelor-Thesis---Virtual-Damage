@@ -72,18 +72,6 @@ public class ObjectLostMessage
 }
 
 /// <summary>
-/// RFID Event Message (später für Arduino Integration)
-/// </summary>
-[Serializable]
-public class RFIDEventMessage
-{
-    public string type;         // "rfid_event"
-    public string object_key;   // z.B. "A1"
-    public string zone;         // "ZONE_A" oder "ZONE_B"
-    public bool is_correct;     // Richtig platziert?
-}
-
-/// <summary>
 /// Objekt-Konfiguration (Prefab Mapping)
 /// </summary>
 [Serializable]

@@ -5,8 +5,8 @@ using System.IO;
 using System;
 
 /// <summary>
-/// Button Manager für Reaktionstest
-/// Highlighted zufälligen Button, misst Reaktionszeit
+/// Button Manager für Reaktionstest - ZEIT-BASIERT
+/// Test läuft X Sekunden, so viele Trials wie möglich
 /// </summary>
 public class ButtonManager : MonoBehaviour
 {
@@ -17,8 +17,14 @@ public class ButtonManager : MonoBehaviour
     public GameObject[] virtualButtons = new GameObject[5];
 
     [Header("Test Settings")]
-    public int totalTrials = 30;
+    [Tooltip("Test Dauer in Sekunden")]
+    public float testDuration = 60f;
+
+    [Tooltip("Delay zwischen Trials (Sekunden)")]
     public float delayBetweenTrials = 1.0f;
+
+    [Tooltip("Timeout pro Trial (Sekunden)")]
+    public float trialTimeout = 5.0f;
 
     [Header("Materials")]
     public Material buttonNormalMaterial;
@@ -36,7 +42,9 @@ public class ButtonManager : MonoBehaviour
 
     // Test State
     private bool testRunning = false;
-    private int currentTrial = 0;
+    private float testStartTime = 0f;
+    private float testElapsedTime = 0f;
+    private int trialsCompleted = 0;
     private int targetButton = 0;
     private float trialStartTime = 0f;
     private bool waitingForInput = false;
@@ -92,8 +100,9 @@ public class ButtonManager : MonoBehaviour
             }
         }
 
-        Debug.Log($"<color=green>Button Manager initialisiert</color>");
+        Debug.Log("<color=green>Button Manager initialisiert (ZEIT-BASIERT)</color>");
         Debug.Log($"  CSV Path: {csvPath}");
+        Debug.Log($"  Test Duration: {testDuration}s");
 
         // Alle Buttons auf Normal setzen
         ResetAllButtons();
@@ -109,6 +118,12 @@ public class ButtonManager : MonoBehaviour
 
     void Update()
     {
+        // Update elapsed time während Test
+        if (testRunning)
+        {
+            testElapsedTime = Time.time - testStartTime;
+        }
+
         // TEMPORÄR: Keyboard Test (ohne Arduino)
         // Drücke Zahlen 1-5 zum Testen
         if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -144,31 +159,60 @@ public class ButtonManager : MonoBehaviour
             return;
         }
 
-        Debug.Log("<color=cyan>REAKTIONSTEST GESTARTET</color>");
+        Debug.Log($"<color=cyan>REAKTIONSTEST GESTARTET ({testDuration}s)</color>");
 
         testRunning = true;
-        currentTrial = 0;
+        testStartTime = Time.time;
+        testElapsedTime = 0f;
+        trialsCompleted = 0;
         results.Clear();
 
         StartCoroutine(RunTest());
     }
 
     /// <summary>
-    /// Test Coroutine
+    /// Stoppt Test manuell
+    /// </summary>
+    public void StopReactionTest()
+    {
+        if (!testRunning)
+            return;
+
+        StopAllCoroutines();
+        testRunning = false;
+        waitingForInput = false;
+
+        Debug.Log("<color=yellow>REAKTIONSTEST MANUELL BEENDET</color>");
+
+        ResetAllButtons();
+        ExportToCSV();
+    }
+
+    /// <summary>
+    /// Test Coroutine - ZEIT-BASIERT
     /// </summary>
     private IEnumerator RunTest()
     {
-        while (currentTrial < totalTrials)
+        while (testElapsedTime < testDuration)
         {
+            // Check: Genug Zeit für weiteres Trial?
+            float timeRemaining = testDuration - testElapsedTime;
+            if (timeRemaining < (trialTimeout + delayBetweenTrials))
+            {
+                // Nicht genug Zeit für komplettes Trial
+                Debug.Log("Nicht genug Zeit für weiteres Trial");
+                break;
+            }
+
             // Trial starten
-            currentTrial++;
+            trialsCompleted++;
 
             // Zufälligen Button wählen (1-5)
             targetButton = UnityEngine.Random.Range(1, 6);
 
             if (showDebugLogs)
             {
-                Debug.Log($"Trial {currentTrial}/{totalTrials}: Button {targetButton}");
+                Debug.Log($"Trial {trialsCompleted}: Button {targetButton} (Zeit: {testElapsedTime:F1}s/{testDuration}s)");
             }
 
             // Button highlighten
@@ -179,27 +223,39 @@ public class ButtonManager : MonoBehaviour
             waitingForInput = true;
 
             // Warte auf Input (oder Timeout)
-            float timeout = 5.0f;  // 5 Sekunden Timeout
             float elapsed = 0f;
 
-            while (waitingForInput && elapsed < timeout)
+            while (waitingForInput && elapsed < trialTimeout)
             {
                 elapsed = Time.time - trialStartTime;
+
+                // Update elapsed time
+                testElapsedTime = Time.time - testStartTime;
+
+                // Check: Gesamtzeit abgelaufen?
+                if (testElapsedTime >= testDuration)
+                {
+                    Debug.Log("Test Zeit abgelaufen während Trial");
+                    waitingForInput = false;
+                    break;
+                }
+
                 yield return null;
             }
 
             // Timeout?
             if (waitingForInput)
             {
-                Debug.LogWarning($"Trial {currentTrial}: TIMEOUT");
+                Debug.LogWarning($"Trial {trialsCompleted}: TIMEOUT");
 
                 results.Add(new TrialResult
                 {
-                    trial = currentTrial,
+                    trial = trialsCompleted,
                     targetButton = targetButton,
                     pressedButton = -1,  // Timeout
                     reactionTimeMs = -1,
-                    correct = false
+                    correct = false,
+                    timestamp = testElapsedTime
                 });
 
                 waitingForInput = false;
@@ -208,13 +264,32 @@ public class ButtonManager : MonoBehaviour
             // Button zurücksetzen
             ResetAllButtons();
 
-            // Pause zwischen Trials
-            yield return new WaitForSeconds(delayBetweenTrials);
+            // Update elapsed time
+            testElapsedTime = Time.time - testStartTime;
+
+            // Check: Zeit für Delay?
+            if (testElapsedTime + delayBetweenTrials < testDuration)
+            {
+                // Pause zwischen Trials
+                yield return new WaitForSeconds(delayBetweenTrials);
+            }
+            else
+            {
+                // Keine Zeit mehr für Delay
+                break;
+            }
+
+            // Update elapsed time nach Delay
+            testElapsedTime = Time.time - testStartTime;
         }
 
         // Test fertig
         testRunning = false;
+        float finalTime = Time.time - testStartTime;
+
         Debug.Log("<color=green>REAKTIONSTEST ABGESCHLOSSEN</color>");
+        Debug.Log($"  Dauer: {finalTime:F1}s");
+        Debug.Log($"  Trials: {trialsCompleted}");
 
         // Exportiere Ergebnisse
         ExportToCSV();
@@ -243,18 +318,20 @@ public class ButtonManager : MonoBehaviour
         // Ergebnis speichern
         results.Add(new TrialResult
         {
-            trial = currentTrial,
+            trial = trialsCompleted,
             targetButton = targetButton,
             pressedButton = buttonId,
             reactionTimeMs = reactionTime,
-            correct = correct
+            correct = correct,
+            timestamp = testElapsedTime
         });
 
+        // Stop waiting
         waitingForInput = false;
     }
 
     /// <summary>
-    /// Highlighted einen Button
+    /// Highlighted Button
     /// </summary>
     private void HighlightButton(int buttonNumber)
     {
@@ -271,16 +348,19 @@ public class ButtonManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Setzt alle Buttons zurück
+    /// Reset alle Buttons zu Normal
     /// </summary>
     private void ResetAllButtons()
     {
-        for (int i = 0; i < virtualButtons.Length; i++)
+        if (buttonNormalMaterial == null)
+            return;
+
+        foreach (GameObject btn in virtualButtons)
         {
-            if (virtualButtons[i] != null)
+            if (btn != null)
             {
-                Renderer rend = virtualButtons[i].GetComponent<Renderer>();
-                if (rend != null && buttonNormalMaterial != null)
+                Renderer rend = btn.GetComponent<Renderer>();
+                if (rend != null)
                 {
                     rend.material = buttonNormalMaterial;
                 }
@@ -289,56 +369,66 @@ public class ButtonManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Exportiert Ergebnisse zu CSV
+    /// CSV Export - Nur eine File mit allen Trial Events
     /// </summary>
     private void ExportToCSV()
     {
+        if (results.Count == 0)
+        {
+            Debug.LogWarning("Keine Ergebnisse zum Exportieren");
+            return;
+        }
+
         try
         {
-            // CSV Header
             bool fileExists = File.Exists(csvPath);
 
-            using (StreamWriter writer = new StreamWriter(csvPath, true))  // append mode
+            using (StreamWriter writer = new StreamWriter(csvPath, true))
             {
-                // Header nur wenn Datei neu ist
+                // Header nur wenn File neu
                 if (!fileExists)
                 {
-                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Trial_Nr,Target_Button,Pressed_Button,Reaction_Time_ms,Correct");
+                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Duration_sec,Trial_Nr,Target_Button,Pressed_Button,Reaction_Time_ms,Correct");
                 }
 
-                // Daten schreiben
+                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                // Schreibe alle Trials
                 foreach (var result in results)
                 {
-                    string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    string line = $"{timestamp},{userId},{injuryLevel},{result.trial},{result.targetButton},{result.pressedButton},{result.reactionTimeMs:F2},{result.correct}";
+                    string pressedButton = result.pressedButton > 0 ? result.pressedButton.ToString() : "TIMEOUT";
+                    string reactionTime = result.reactionTimeMs > 0 ? result.reactionTimeMs.ToString("F2") : "-1";
+
+                    string line = $"{timestamp},{userId},{injuryLevel},{testDuration},{result.trial},{result.targetButton},{pressedButton},{reactionTime},{result.correct}";
                     writer.WriteLine(line);
                 }
             }
 
-            Debug.Log($"<color=green>Ergebnisse gespeichert: {csvPath}</color>");
-            Debug.Log($"   {results.Count} Trials exportiert");
-
-            // Statistik
-            int correct = 0;
-            float totalTime = 0f;
+            // Berechne Statistiken für Log
+            int correctCount = 0;
+            float totalReactionTime = 0f;
             int validTrials = 0;
 
-            foreach (var r in results)
+            foreach (var result in results)
             {
-                if (r.correct) correct++;
-                if (r.reactionTimeMs > 0)
+                if (result.correct)
+                    correctCount++;
+
+                if (result.reactionTimeMs > 0)
                 {
-                    totalTime += r.reactionTimeMs;
+                    totalReactionTime += result.reactionTimeMs;
                     validTrials++;
                 }
             }
 
-            float avgTime = validTrials > 0 ? totalTime / validTrials : 0;
-            float accuracy = results.Count > 0 ? (correct / (float)results.Count) * 100f : 0;
+            float accuracy = (trialsCompleted > 0) ? (float)correctCount / trialsCompleted * 100f : 0f;
+            float avgReactionTime = (validTrials > 0) ? totalReactionTime / validTrials : 0f;
 
-            Debug.Log($"\nStatistik:");
-            Debug.Log($"   Genauigkeit: {accuracy:F1}% ({correct}/{results.Count})");
-            Debug.Log($"   Durchschnittliche Reaktionszeit: {avgTime:F0}ms");
+            Debug.Log($"<color=green>CSV gespeichert: {csvPath}</color>");
+            Debug.Log($"  Trials: {trialsCompleted}");
+            Debug.Log($"  Accuracy: {accuracy:F1}%");
+            Debug.Log($"  Avg RT: {avgReactionTime:F0}ms");
+
         }
         catch (Exception e)
         {
@@ -347,17 +437,20 @@ public class ButtonManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Zeigt Test-UI
+    /// OnGUI - Debug UI
     /// </summary>
     void OnGUI()
     {
         if (showDebugLogs)
         {
-            GUILayout.BeginArea(new Rect(10, 320, 300, 150));
-            GUILayout.Label("<b>Reaktionstest</b>");
+            // Position RECHTS statt links (SortingTaskManager ist links)
+            GUILayout.BeginArea(new Rect(Screen.width - 310, 10, 300, 200));
+            GUILayout.Label("<b>Reaction Test (Zeit-basiert)</b>");
 
             if (!testRunning)
             {
+                GUILayout.Label($"Test Duration: {testDuration}s");
+
                 if (GUILayout.Button("START TEST"))
                 {
                     StartReactionTest();
@@ -365,23 +458,41 @@ public class ButtonManager : MonoBehaviour
             }
             else
             {
-                GUILayout.Label($"Trial: {currentTrial}/{totalTrials}");
-                GUILayout.Label($"Target: Button {targetButton}");
+                float timeRemaining = testDuration - testElapsedTime;
+                GUILayout.Label($"Zeit: {testElapsedTime:F1}s / {testDuration}s");
+                GUILayout.Label($"Verbleibend: {timeRemaining:F1}s");
+                GUILayout.Label($"Trials: {trialsCompleted}");
 
-                if (waitingForInput)
+                int correctCount = 0;
+                foreach (var r in results)
                 {
-                    float elapsed = Time.time - trialStartTime;
-                    GUILayout.Label($"Zeit: {elapsed:F2}s");
+                    if (r.correct) correctCount++;
+                }
+
+                float accuracy = results.Count > 0 ? (float)correctCount / results.Count * 100f : 0f;
+                GUILayout.Label($"Korrekt: {correctCount}/{results.Count} ({accuracy:F0}%)");
+
+                if (results.Count > 0)
+                {
+                    var lastResult = results[results.Count - 1];
+                    if (lastResult.reactionTimeMs > 0)
+                    {
+                        GUILayout.Label($"Letzte RT: {lastResult.reactionTimeMs:F0}ms");
+                    }
+                }
+
+                if (GUILayout.Button("STOP (manuell)"))
+                {
+                    StopReactionTest();
                 }
             }
 
-            GUILayout.Label($"Results: {results.Count}");
             GUILayout.EndArea();
         }
     }
 
     /// <summary>
-    /// Öffnet den CSV Ordner im Explorer
+    /// CSV Ordner öffnen
     /// </summary>
     [ContextMenu("CSV Ordner öffnen")]
     public void OpenCsvFolder()
@@ -408,7 +519,7 @@ public class ButtonManager : MonoBehaviour
 }
 
 /// <summary>
-/// Trial Result Daten-Struktur
+/// Trial Result Data
 /// </summary>
 [Serializable]
 public class TrialResult
@@ -418,4 +529,5 @@ public class TrialResult
     public int pressedButton;
     public float reactionTimeMs;
     public bool correct;
+    public float timestamp;  // Zeit seit Test Start
 }

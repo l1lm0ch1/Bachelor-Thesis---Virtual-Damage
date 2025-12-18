@@ -61,6 +61,41 @@ public class TrackedObject : MonoBehaviour
         {
             originalColor = objectRenderer.material.color;
         }
+
+        // Setup Collider + Rigidbody für Zone Detection
+        SetupColliderForZones();
+    }
+
+    /// <summary>
+    /// Setup Collider und Rigidbody für Zone Trigger Detection
+    /// </summary>
+    private void SetupColliderForZones()
+    {
+        // Collider hinzufügen falls nicht vorhanden
+        Collider col = GetComponent<Collider>();
+        if (col == null)
+        {
+            // BoxCollider passend zur Würfel-Größe
+            BoxCollider boxCol = gameObject.AddComponent<BoxCollider>();
+            // Größe wird automatisch an Mesh angepasst
+        }
+
+        // Rigidbody für Trigger Detection (Kinematic!)
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
+
+        // WICHTIG: Kinematic = Position wird vom Tracking gesteuert, nicht von Physics
+        rb.isKinematic = true;
+        rb.useGravity = false;
+
+        // Tag setzen für Zone Detection
+        if (gameObject.tag == "Untagged")
+        {
+            gameObject.tag = "Cube";
+        }
     }
 
     /// <summary>
@@ -127,24 +162,6 @@ public class TrackedObject : MonoBehaviour
             // Objekt wird nicht mehr getrackt
             // Könnte hier Opacity reduzieren oder Ghost-Mode aktivieren
         }
-    }
-
-    /// <summary>
-    /// Zeigt RFID Feedback (grün = korrekt, rot = falsch)
-    /// </summary>
-    public void ShowRFIDFeedback(bool isCorrect)
-    {
-        if (objectRenderer == null)
-            return;
-
-        Color feedbackColor = isCorrect ? Color.green : Color.red;
-        objectRenderer.material.color = feedbackColor;
-
-        showingFeedback = true;
-        feedbackTimer = 1.0f; // 1 Sekunde Feedback
-
-        // Optional: Sound abspielen
-        // AudioSource.PlayClipAtPoint(isCorrect ? correctSound : wrongSound, transform.position);
     }
 
     /// <summary>

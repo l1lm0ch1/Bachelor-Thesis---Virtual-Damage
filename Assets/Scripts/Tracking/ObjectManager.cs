@@ -1,9 +1,12 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// Object Manager - Verwaltet alle getrackten Objekte
 /// Spawnt, updated und entfernt Objekte basierend auf Python Tracking Daten
+/// 
+/// WICHTIG: RFID Events werden NICHT mehr hier gehandelt!
+/// RFID wird jetzt von ArduinoUDPReceiver + SortingTaskManager gehandelt.
 /// </summary>
 public class ObjectManager : MonoBehaviour
 {
@@ -12,10 +15,10 @@ public class ObjectManager : MonoBehaviour
     public UDPReceiver udpReceiver;
 
     [Header("Prefabs")]
-    [Tooltip("Prefab für Typ A Objekte (z.B. rote Würfel)")]
+    [Tooltip("Prefab fÃ¼r Typ A Objekte (z.B. rote WÃ¼rfel)")]
     public GameObject prefabTypeA;
 
-    [Tooltip("Prefab für Typ B Objekte (z.B. blaue Würfel)")]
+    [Tooltip("Prefab fÃ¼r Typ B Objekte (z.B. blaue WÃ¼rfel)")]
     public GameObject prefabTypeB;
 
     [Header("Tracking Settings")]
@@ -27,7 +30,7 @@ public class ObjectManager : MonoBehaviour
     [Range(0f, 1f)]
     public float rotationSmoothing = 0.3f;
 
-    [Tooltip("Basis-Offset für alle Objekte (Tisch-Position anpassen)")]
+    [Tooltip("Basis-Offset fÃ¼r alle Objekte (Tisch-Position anpassen)")]
     public Vector3 worldOffset = new Vector3(0, 0, 0);
 
     [Header("Visualization")]
@@ -40,7 +43,7 @@ public class ObjectManager : MonoBehaviour
     [Header("Debug")]
     public bool showDebugLogs = true;
 
-    // Dictionary: Object Key ? GameObject Instance
+    // Dictionary: Object Key â†’ GameObject Instance
     private Dictionary<string, TrackedObject> trackedObjects = new Dictionary<string, TrackedObject>();
 
     // Stats
@@ -56,7 +59,7 @@ public class ObjectManager : MonoBehaviour
 
             if (udpReceiver == null)
             {
-                Debug.LogError("? UDPReceiver nicht gefunden! Bitte zuweisen.");
+                Debug.LogError("UDPReceiver nicht gefunden! Bitte zuweisen.");
                 return;
             }
         }
@@ -64,7 +67,7 @@ public class ObjectManager : MonoBehaviour
         // Event subscriben
         udpReceiver.MessageReceived += OnMessageReceived;
 
-        Debug.Log("<color=green>? Object Manager initialisiert</color>");
+        Debug.Log("<color=green>Object Manager initialisiert</color>");
         Debug.Log($"  Prefab Typ A: {(prefabTypeA != null ? prefabTypeA.name : "FEHLT!")}");
         Debug.Log($"  Prefab Typ B: {(prefabTypeB != null ? prefabTypeB.name : "FEHLT!")}");
     }
@@ -79,6 +82,7 @@ public class ObjectManager : MonoBehaviour
 
     /// <summary>
     /// Callback wenn UDP Message empfangen wird
+    /// RFID Events werden von ArduinoUDPReceiver gehandelt, nicht hier!
     /// </summary>
     private void OnMessageReceived(string messageType, string jsonData)
     {
@@ -90,10 +94,6 @@ public class ObjectManager : MonoBehaviour
 
             case "object_lost":
                 HandleObjectLost(jsonData);
-                break;
-
-            case "rfid_event":
-                HandleRFIDEvent(jsonData);
                 break;
 
             default:
@@ -136,12 +136,12 @@ public class ObjectManager : MonoBehaviour
     /// </summary>
     private void SpawnTrackedObject(ObjectUpdateMessage msg)
     {
-        // Wähle richtiges Prefab
+        // WÃ¤hle richtiges Prefab
         GameObject prefab = msg.object_type == "A" ? prefabTypeA : prefabTypeB;
 
         if (prefab == null)
         {
-            Debug.LogError($"Prefab für Typ {msg.object_type} nicht zugewiesen!");
+            Debug.LogError($"Prefab fÃ¼r Typ {msg.object_type} nicht zugewiesen!");
             return;
         }
 
@@ -153,7 +153,7 @@ public class ObjectManager : MonoBehaviour
         GameObject instance = Instantiate(prefab, spawnPos, spawnRot, transform);
         instance.name = msg.object_name;
 
-        // TrackedObject Component hinzufügen
+        // TrackedObject Component hinzufÃ¼gen
         TrackedObject trackedObj = instance.AddComponent<TrackedObject>();
         trackedObj.Initialize(msg, positionSmoothing, rotationSmoothing);
 
@@ -168,7 +168,7 @@ public class ObjectManager : MonoBehaviour
             AddObjectLabel(instance, msg.object_name);
         }
 
-        // Zu Dictionary hinzufügen
+        // Zu Dictionary hinzufÃ¼gen
         trackedObjects.Add(msg.object_key, trackedObj);
 
         totalObjectsSpawned++;
@@ -176,7 +176,7 @@ public class ObjectManager : MonoBehaviour
 
         if (showDebugLogs)
         {
-            Debug.Log($"<color=cyan>?? Spawned: {msg.object_name} (ID {msg.marker_id}, {msg.side})</color>");
+            Debug.Log($"<color=cyan>Spawned: {msg.object_name} (ID {msg.marker_id}, {msg.side})</color>");
         }
     }
 
@@ -214,7 +214,7 @@ public class ObjectManager : MonoBehaviour
         {
             if (showDebugLogs)
             {
-                Debug.Log($"<color=yellow>? Lost: {msg.object_key}</color>");
+                Debug.Log($"<color=yellow>Lost: {msg.object_key}</color>");
             }
 
             Destroy(trackedObj.gameObject);
@@ -224,38 +224,11 @@ public class ObjectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Verarbeitet RFID Event (Arduino Integration)
-    /// </summary>
-    private void HandleRFIDEvent(string jsonData)
-    {
-        RFIDEventMessage msg = JsonUtility.FromJson<RFIDEventMessage>(jsonData);
-
-        if (msg == null)
-        {
-            return;
-        }
-
-        if (showDebugLogs)
-        {
-            string status = msg.is_correct ? "? KORREKT" : "? FALSCH";
-            Debug.Log($"<color=magenta>?? RFID: {msg.object_key} ? {msg.zone} [{status}]</color>");
-        }
-
-        // Feedback in VR (Visual + Audio)
-        // TODO: Implementiere Feedback-System
-        if (trackedObjects.ContainsKey(msg.object_key))
-        {
-            TrackedObject obj = trackedObjects[msg.object_key];
-            obj.ShowRFIDFeedback(msg.is_correct);
-        }
-    }
-
-    /// <summary>
-    /// Fügt Debug-Achsen hinzu (X=Rot, Y=Grün, Z=Blau)
+    /// FÃ¼gt Debug-Achsen hinzu (X=Rot, Y=GrÃ¼n, Z=Blau)
     /// </summary>
     private void AddDebugAxes(GameObject obj)
     {
-        // Erstelle drei LineRenderers für X, Y, Z Achsen
+        // Erstelle drei LineRenderers fÃ¼r X, Y, Z Achsen
         float axisLength = 0.05f; // 5cm
 
         CreateAxisLine(obj, Vector3.right, Color.red, axisLength);    // X
@@ -280,12 +253,12 @@ public class ObjectManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Fügt Text-Label hinzu
+    /// FÃ¼gt Text-Label hinzu
     /// </summary>
     private void AddObjectLabel(GameObject obj, string labelText)
     {
         // TODO: Implementiere 3D Text oder TextMeshPro
-        // Für jetzt: Marker via Gizmos in Scene View
+        // FÃ¼r jetzt: Marker via Gizmos in Scene View
     }
 
     /// <summary>
@@ -296,7 +269,7 @@ public class ObjectManager : MonoBehaviour
         if (showDebugLogs)
         {
             GUILayout.BeginArea(new Rect(10, 120, 300, 100));
-            GUILayout.Label($"<b>Object Manager</b>");
+            GUILayout.Label("<b>Object Manager</b>");
             GUILayout.Label($"Active Objects: {activeObjects}");
             GUILayout.Label($"Total Spawned: {totalObjectsSpawned}");
             GUILayout.EndArea();
