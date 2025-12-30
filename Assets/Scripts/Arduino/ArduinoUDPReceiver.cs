@@ -2,125 +2,138 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using UnityEngine;
 
 /// <summary>
-/// UDP Receiver für Arduino Button Events
-/// Port 5006 (separat von Tracking Port 5005)
+/// Arduino UDP Receiver - Buttons + Sliders
+/// Empfängt Events vom Arduino via Python Bridge
 /// </summary>
 public class ArduinoUDPReceiver : MonoBehaviour
 {
-    [Header("UDP Configuration")]
-    [Tooltip("Port für Arduino Daten (verschieden von Tracking!)")]
-    public int port = 5006;
+    [Header("UDP Settings")]
+    [Tooltip("Port muss mit Python Script übereinstimmen")]
+    public int udpPort = 5006;
 
     [Header("Debug")]
     public bool showDebugLogs = true;
 
-    // UDP Socket
+    // UDP Client
     private UdpClient udpClient;
-    private Thread receiveThread;
+    private IPEndPoint remoteEndPoint;
     private bool isRunning = false;
 
-    // Event für empfangene Button Events
+    // Event fuer empfangene Button Events
     public delegate void OnButtonEvent(int buttonId, string action);
     public event OnButtonEvent ButtonPressed;
     public event OnButtonEvent ButtonReleased;
 
-    // Stats
-    private int messagesReceived = 0;
+    // Event fuer empfangene Slider Events
+    public delegate void OnSliderEvent(int sliderId, float value);
+    public event OnSliderEvent SliderChanged;
 
     void Start()
     {
-        // WICHTIG: MainThreadDispatcher initialisieren (falls nicht schon durch UDPReceiver)
-        if (FindFirstObjectByType<UnityMainThreadDispatcher>() == null)
+        try
         {
-            UnityMainThreadDispatcher.Instance();
-        }
+            udpClient = new UdpClient(udpPort);
+            remoteEndPoint = new IPEndPoint(IPAddress.Any, udpPort);
+            isRunning = true;
+            udpClient.BeginReceive(ReceiveCallback, null);
 
-        StartUDPListener();
+            Debug.Log($"<color=green>Arduino UDP Receiver gestartet auf Port {udpPort}</color>");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"Kann UDP Socket nicht starten: {e.Message}");
+        }
     }
 
     void OnDestroy()
     {
-        StopUDPListener();
-    }
-
-    void OnApplicationQuit()
-    {
-        StopUDPListener();
-    }
-
-    private void StartUDPListener()
-    {
-        try
-        {
-            udpClient = new UdpClient(port);
-            isRunning = true;
-
-            receiveThread = new Thread(new ThreadStart(ReceiveData));
-            receiveThread.IsBackground = true;
-            receiveThread.Start();
-
-            Debug.Log($"<color=green>Arduino UDP Listener gestartet auf Port {port}</color>");
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Fehler beim Starten des Arduino UDP Listeners: {e.Message}");
-        }
-    }
-
-    private void StopUDPListener()
-    {
         isRunning = false;
-
-        if (receiveThread != null && receiveThread.IsAlive)
-        {
-            receiveThread.Abort();
-        }
 
         if (udpClient != null)
         {
-            udpClient.Close();
-        }
-
-        Debug.Log("Arduino UDP Listener gestoppt");
-    }
-
-    private void ReceiveData()
-    {
-        while (isRunning)
-        {
             try
             {
-                IPEndPoint remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
-                byte[] data = udpClient.Receive(ref remoteEndPoint);
-
-                string jsonString = Encoding.UTF8.GetString(data);
-
-                lock (this)
-                {
-                    messagesReceived++;
-                }
-
-                // Parse und Event auslösen auf Main Thread
-                UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                {
-                    HandleButtonEvent(jsonString);
-                });
+                udpClient.Close();
             }
-            catch (ThreadAbortException)
+            catch
             {
-                break;
+                // Ignore dispose errors
             }
-            catch (Exception e)
+        }
+    }
+
+    private void ReceiveCallback(IAsyncResult ar)
+    {
+        if (!isRunning)
+            return;
+
+        try
+        {
+            byte[] data = udpClient.EndReceive(ar, ref remoteEndPoint);
+            string message = Encoding.UTF8.GetString(data);
+
+            // Parse Message im Main Thread
+            UnityMainThreadDispatcher.Instance().Enqueue(() => {
+                HandleEvent(message);
+            });
+
+            // Weiter empfangen (nur wenn noch aktiv)
+            if (isRunning && udpClient != null)
             {
-                if (isRunning)
+                udpClient.BeginReceive(ReceiveCallback, null);
+            }
+        }
+        catch (ObjectDisposedException)
+        {
+            // Normal beim Beenden - ignorieren
+        }
+        catch (Exception e)
+        {
+            if (isRunning && udpClient != null)
+            {
+                Debug.LogError($"UDP Receive Fehler: {e.Message}");
+
+                try
                 {
-                    Debug.LogWarning($"Arduino UDP Receive Error: {e.Message}");
+                    udpClient.BeginReceive(ReceiveCallback, null);
+                }
+                catch
+                {
+                    // Ignore if already disposed
                 }
             }
+        }
+    }
+
+    private void HandleEvent(string jsonString)
+    {
+        try
+        {
+            // Parse Event Type
+            var msg = JsonUtility.FromJson<EventTypeCheck>(jsonString);
+
+            if (msg.type == "button_event")
+            {
+                HandleButtonEvent(jsonString);
+            }
+            else if (msg.type == "slider_event")
+            {
+                HandleSliderEvent(jsonString);
+            }
+            else
+            {
+                if (showDebugLogs)
+                {
+                    Debug.LogWarning($"Unbekannter Event Type: {msg.type}");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Fehler beim Parsen von Event: {e.Message}");
         }
     }
 
@@ -130,14 +143,13 @@ public class ArduinoUDPReceiver : MonoBehaviour
         {
             ButtonEventMessage msg = JsonUtility.FromJson<ButtonEventMessage>(jsonString);
 
-            if (msg != null && msg.type == "button_event")
+            if (msg != null)
             {
                 if (showDebugLogs)
                 {
                     Debug.Log($"Button {msg.button_id}: {msg.action}");
                 }
 
-                // Events auslösen
                 if (msg.action == "pressed")
                 {
                     ButtonPressed?.Invoke(msg.button_id, msg.action);
@@ -154,16 +166,31 @@ public class ArduinoUDPReceiver : MonoBehaviour
         }
     }
 
-    void OnGUI()
+    private void HandleSliderEvent(string jsonString)
     {
-        if (showDebugLogs)
+        try
         {
-            GUILayout.BeginArea(new Rect(10, 220, 300, 80));
-            GUILayout.Label($"<b>Arduino UDP</b>");
-            GUILayout.Label($"Port: {port}");
-            GUILayout.Label($"Messages: {messagesReceived}");
-            GUILayout.Label($"Status: {(isRunning ? "RUNNING" : "STOPPED")}");
-            GUILayout.EndArea();
+            SliderEventMessage msg = JsonUtility.FromJson<SliderEventMessage>(jsonString);
+
+            if (msg != null)
+            {
+                if (showDebugLogs)
+                {
+                    Debug.Log($"Slider {msg.slider_id}: {msg.value:F3}");
+                }
+
+                SliderChanged?.Invoke(msg.slider_id, msg.value);
+            }
         }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"Fehler beim Parsen von Slider Event: {e.Message}");
+        }
+    }
+
+    [Serializable]
+    private class EventTypeCheck
+    {
+        public string type;
     }
 }

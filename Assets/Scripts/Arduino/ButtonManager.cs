@@ -69,8 +69,9 @@ public class ButtonManager : MonoBehaviour
             return;
         }
 
-        // Button Pressed Event subscriben
+        // Button Events subscriben
         arduinoReceiver.ButtonPressed += OnButtonPressed;
+        arduinoReceiver.ButtonReleased += OnButtonReleased;
 
         // CSV Path bestimmen
         if (string.IsNullOrEmpty(customCsvFolder))
@@ -113,19 +114,19 @@ public class ButtonManager : MonoBehaviour
         if (arduinoReceiver != null)
         {
             arduinoReceiver.ButtonPressed -= OnButtonPressed;
+            arduinoReceiver.ButtonReleased -= OnButtonReleased;
         }
     }
 
     void Update()
     {
-        // Update elapsed time während Test
+        // Update elapsed time waehrend Test
         if (testRunning)
         {
             testElapsedTime = Time.time - testStartTime;
         }
 
-        // TEMPORÄR: Keyboard Test (ohne Arduino)
-        // Drücke Zahlen 1-5 zum Testen
+        // Keyboard Test - Button Press
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             OnButtonPressed(1, "pressed");
@@ -145,6 +146,28 @@ public class ButtonManager : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Alpha5))
         {
             OnButtonPressed(5, "pressed");
+        }
+
+        // Keyboard Test - Button Release (fuer Preview Mode)
+        if (Input.GetKeyUp(KeyCode.Alpha1))
+        {
+            OnButtonPressed(1, "released");
+        }
+        else if (Input.GetKeyUp(KeyCode.Alpha2))
+        {
+            OnButtonPressed(2, "released");
+        }
+        else if (Input.GetKeyUp(KeyCode.Alpha3))
+        {
+            OnButtonPressed(3, "released");
+        }
+        else if (Input.GetKeyUp(KeyCode.Alpha4))
+        {
+            OnButtonPressed(4, "released");
+        }
+        else if (Input.GetKeyUp(KeyCode.Alpha5))
+        {
+            OnButtonPressed(5, "released");
         }
     }
 
@@ -296,15 +319,34 @@ public class ButtonManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Button Press Callback
+    /// Button Press Callback - PREVIEW MODE + TEST MODE
     /// </summary>
     private void OnButtonPressed(int buttonId, string action)
     {
+        // PREVIEW MODE: Visuelles Feedback NUR ausserhalb vom Test
+        if (!testRunning)
+        {
+            if (action == "pressed")
+            {
+                HighlightButton(buttonId);
+
+                if (showDebugLogs)
+                {
+                    Debug.Log($"[PREVIEW] Button {buttonId} pressed");
+                }
+            }
+            else if (action == "released")
+            {
+                ResetButton(buttonId);
+            }
+        }
+
+        // TEST MODE: Recording nur waehrend Test
         if (!waitingForInput)
             return;
 
         // Reaktionszeit berechnen
-        float reactionTime = (Time.time - trialStartTime) * 1000f;  // in ms
+        float reactionTime = (Time.time - trialStartTime) * 1000f;
 
         // Korrekt?
         bool correct = (buttonId == targetButton);
@@ -312,7 +354,7 @@ public class ButtonManager : MonoBehaviour
         if (showDebugLogs)
         {
             string status = correct ? "KORREKT" : "FALSCH";
-            Debug.Log($"Button {buttonId} pressed: {reactionTime:F0}ms [{status}]");
+            Debug.Log($"[TEST] Button {buttonId} pressed: {reactionTime:F0}ms [{status}]");
         }
 
         // Ergebnis speichern
@@ -331,11 +373,20 @@ public class ButtonManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Button Released Callback - wird von Arduino Event aufgerufen
+    /// </summary>
+    private void OnButtonReleased(int buttonId, string action)
+    {
+        // Einfach an OnButtonPressed weiterleiten mit "released" action
+        OnButtonPressed(buttonId, "released");
+    }
+
+    /// <summary>
     /// Highlighted Button
     /// </summary>
     private void HighlightButton(int buttonNumber)
     {
-        int index = buttonNumber - 1;  // Array ist 0-indexed
+        int index = buttonNumber - 1;
 
         if (index >= 0 && index < virtualButtons.Length && virtualButtons[index] != null)
         {
@@ -343,6 +394,23 @@ public class ButtonManager : MonoBehaviour
             if (rend != null && buttonHighlightMaterial != null)
             {
                 rend.material = buttonHighlightMaterial;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reset einzelnen Button (fuer Preview Mode)
+    /// </summary>
+    private void ResetButton(int buttonNumber)
+    {
+        int index = buttonNumber - 1;
+
+        if (index >= 0 && index < virtualButtons.Length && virtualButtons[index] != null)
+        {
+            Renderer rend = virtualButtons[index].GetComponent<Renderer>();
+            if (rend != null && buttonNormalMaterial != null)
+            {
+                rend.material = buttonNormalMaterial;
             }
         }
     }
