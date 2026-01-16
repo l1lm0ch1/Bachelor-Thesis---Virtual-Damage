@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Cube
   - Zone
+  - Hand
   layers:
   - Default
   - TransparentFX
