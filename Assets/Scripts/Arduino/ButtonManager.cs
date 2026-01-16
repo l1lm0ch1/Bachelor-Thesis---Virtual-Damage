@@ -31,14 +31,17 @@ public class ButtonManager : MonoBehaviour
     public Material buttonHighlightMaterial;
 
     [Header("CSV Export")]
-    [Tooltip("Leer lassen für Default Path (Application.persistentDataPath)")]
+    [Tooltip("Leer lassen fuer Default Path (Application.persistentDataPath)")]
     public string customCsvFolder = "";
     public string csvFileName = "reaction_test_results.csv";
-    public string userId = "User_01";
-    public int injuryLevel = 0;  // 0=keine, 1=leicht, 2=schwer
 
     [Header("Debug")]
     public bool showDebugLogs = true;
+
+    // User Info (aus AdminInfoPanel)
+    private string userId = "Participant_001";
+    private string injuryLevel = "Normal";
+    private string testType = "Button_Physical";
 
     // Test State
     private bool testRunning = false;
@@ -182,7 +185,20 @@ public class ButtonManager : MonoBehaviour
             return;
         }
 
+        // User Info aus AdminInfoPanel holen
+        if (AdminInfoPanel.Instance != null)
+        {
+            userId = AdminInfoPanel.Instance.GetUserName();
+            injuryLevel = AdminInfoPanel.Instance.GetInjuryState();
+        }
+        else
+        {
+            Debug.LogWarning("AdminInfoPanel nicht gefunden - nutze Default Werte");
+        }
+
         Debug.Log($"<color=cyan>REAKTIONSTEST GESTARTET ({testDuration}s)</color>");
+        Debug.Log($"  User: {userId}");
+        Debug.Log($"  Injury: {injuryLevel}");
 
         testRunning = true;
         testStartTime = Time.time;
@@ -456,7 +472,7 @@ public class ButtonManager : MonoBehaviour
                 // Header nur wenn File neu
                 if (!fileExists)
                 {
-                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Duration_sec,Trial_Nr,Target_Button,Pressed_Button,Reaction_Time_ms,Correct");
+                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Test_Duration_sec,Trial_Nr,Target_Button,Pressed_Button,Reaction_Time_ms,Correct");
                 }
 
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -467,7 +483,7 @@ public class ButtonManager : MonoBehaviour
                     string pressedButton = result.pressedButton > 0 ? result.pressedButton.ToString() : "TIMEOUT";
                     string reactionTime = result.reactionTimeMs > 0 ? result.reactionTimeMs.ToString("F2") : "-1";
 
-                    string line = $"{timestamp},{userId},{injuryLevel},{testDuration},{result.trial},{result.targetButton},{pressedButton},{reactionTime},{result.correct}";
+                    string line = $"{timestamp},{userId},{injuryLevel},{testType},{testDuration},{result.trial},{result.targetButton},{pressedButton},{reactionTime},{result.correct}";
                     writer.WriteLine(line);
                 }
             }
@@ -505,21 +521,32 @@ public class ButtonManager : MonoBehaviour
     }
 
     /// <summary>
-    /// OnGUI - Debug UI
+    /// OnGUI - Debug Status Display (START wird von AdminUI gehandled)
     /// </summary>
     void OnGUI()
     {
         if (showDebugLogs)
         {
-            // Position RECHTS statt links (SortingTaskManager ist links)
+            // Position RECHTS (SortingTaskManager ist links)
             GUILayout.BeginArea(new Rect(Screen.width - 310, 10, 300, 200));
-            GUILayout.Label("<b>Reaction Test (Zeit-basiert)</b>");
+            GUILayout.BeginVertical("box");
+
+            GUILayout.Label("<b>BUTTON TEST (Physical)</b>");
+            GUILayout.Space(5);
+
+            // User Info aus AdminInfoPanel anzeigen
+            if (AdminInfoPanel.Instance != null)
+            {
+                GUILayout.Label($"User: {AdminInfoPanel.Instance.GetUserName()}");
+                GUILayout.Label($"Injury: {AdminInfoPanel.Instance.GetInjuryState()}");
+                GUILayout.Space(5);
+            }
 
             if (!testRunning)
             {
-                GUILayout.Label($"Test Duration: {testDuration}s");
+                GUILayout.Label($"Duration: {testDuration}s");
 
-                if (GUILayout.Button("START TEST"))
+                if (GUILayout.Button("START BUTTON TEST", GUILayout.Height(40)))
                 {
                     StartReactionTest();
                 }
@@ -555,6 +582,7 @@ public class ButtonManager : MonoBehaviour
                 }
             }
 
+            GUILayout.EndVertical();
             GUILayout.EndArea();
         }
     }

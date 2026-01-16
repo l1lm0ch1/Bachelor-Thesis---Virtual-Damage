@@ -6,6 +6,7 @@ using System;
 
 /// <summary>
 /// Sorting Task Manager - Collider-basierte Validation, Timer, CSV Export
+/// PHYSICAL VERSION mit ArUco Cubes
 /// </summary>
 public class SortingTaskManager : MonoBehaviour
 {
@@ -26,8 +27,6 @@ public class SortingTaskManager : MonoBehaviour
     [Tooltip("Leer lassen fuer Default Path")]
     public string customCsvFolder = "";
     public string csvFileName = "sorting_task_results.csv";
-    public string userId = "User_01";
-    public int injuryLevel = 0;
 
     [Header("Task Settings")]
     [Tooltip("Wie lange muss Cube in Zone bleiben fuer Validation (Sekunden)")]
@@ -35,6 +34,11 @@ public class SortingTaskManager : MonoBehaviour
 
     [Header("Debug")]
     public bool showDebugLogs = true;
+
+    // User Info (aus AdminInfoPanel)
+    private string userId = "Participant_001";
+    private string injuryLevel = "Normal";
+    private string testType = "Sorting_Physical";
 
     // Task State
     private bool taskRunning = false;
@@ -119,7 +123,21 @@ public class SortingTaskManager : MonoBehaviour
             return;
         }
 
+        // User Info aus AdminInfoPanel holen
+        if (AdminInfoPanel.Instance != null)
+        {
+            userId = AdminInfoPanel.Instance.GetUserName();
+            injuryLevel = AdminInfoPanel.Instance.GetInjuryState();
+        }
+        else
+        {
+            Debug.LogWarning("AdminInfoPanel nicht gefunden - nutze Default Werte");
+        }
+
         Debug.Log("<color=cyan>SORTING TASK GESTARTET (COLLIDER)</color>");
+        Debug.Log($"  User: {userId}");
+        Debug.Log($"  Injury: {injuryLevel}");
+        Debug.Log($"  Test Type: {testType}");
 
         taskRunning = true;
         taskStartTime = Time.time;
@@ -297,11 +315,11 @@ public class SortingTaskManager : MonoBehaviour
             {
                 if (!fileExists)
                 {
-                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Total_Time_sec,Total_Placements,Correct_Placements,Incorrect_Placements,Unique_Cubes_Validated,Completion");
+                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Total_Time_sec,Total_Placements,Correct_Placements,Incorrect_Placements,Unique_Cubes_Validated,Completion");
                 }
 
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                string line = $"{timestamp},{userId},{injuryLevel},{totalTime:F2},{totalPlacements},{correctPlacements},{incorrectPlacements},{validatedCubes.Count},{completionStatus}";
+                string line = $"{timestamp},{userId},{injuryLevel},{testType},{totalTime:F2},{totalPlacements},{correctPlacements},{incorrectPlacements},{validatedCubes.Count},{completionStatus}";
                 writer.WriteLine(line);
             }
 
@@ -314,7 +332,7 @@ public class SortingTaskManager : MonoBehaviour
             {
                 if (!fileExists)
                 {
-                    writer.WriteLine("Timestamp,User_ID,Event_Nr,Cube_Key,Cube_Type,Zone,Correct,Time_Since_Start_sec");
+                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Event_Nr,Cube_Key,Cube_Type,Zone,Correct,Time_Since_Start_sec");
                 }
 
                 string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -322,7 +340,7 @@ public class SortingTaskManager : MonoBehaviour
                 for (int i = 0; i < placementEvents.Count; i++)
                 {
                     var evt = placementEvents[i];
-                    string line = $"{timestamp},{userId},{i + 1},{evt.cubeKey},{evt.cubeType},{evt.zoneName},{evt.correct},{evt.timeSinceStart:F2}";
+                    string line = $"{timestamp},{userId},{injuryLevel},{testType},{i + 1},{evt.cubeKey},{evt.cubeType},{evt.zoneName},{evt.correct},{evt.timeSinceStart:F2}";
                     writer.WriteLine(line);
                 }
             }
@@ -343,12 +361,23 @@ public class SortingTaskManager : MonoBehaviour
     {
         if (showDebugLogs)
         {
-            GUILayout.BeginArea(new Rect(10, 480, 300, 180));
-            GUILayout.Label("<b>Sorting Task (Collider)</b>");
+            GUILayout.BeginArea(new Rect(10, 480, 300, 200));
+            GUILayout.BeginVertical("box");
+
+            GUILayout.Label("<b>SORTING TASK (Physical)</b>");
+            GUILayout.Space(5);
+
+            // User Info aus AdminInfoPanel anzeigen
+            if (AdminInfoPanel.Instance != null)
+            {
+                GUILayout.Label($"User: {AdminInfoPanel.Instance.GetUserName()}");
+                GUILayout.Label($"Injury: {AdminInfoPanel.Instance.GetInjuryState()}");
+                GUILayout.Space(5);
+            }
 
             if (!taskRunning)
             {
-                if (GUILayout.Button("START SORTING TASK"))
+                if (GUILayout.Button("START SORTING TASK", GUILayout.Height(40)))
                 {
                     StartSortingTask();
                 }
@@ -376,6 +405,7 @@ public class SortingTaskManager : MonoBehaviour
                 GUILayout.Label($"Zone {zone.zoneType}: {zone.GetCubeCount()}");
             }
 
+            GUILayout.EndVertical();
             GUILayout.EndArea();
         }
     }

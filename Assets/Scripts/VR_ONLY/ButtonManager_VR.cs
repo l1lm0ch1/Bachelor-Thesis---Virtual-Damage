@@ -40,15 +40,13 @@ public class ButtonManager_VR : MonoBehaviour
     [Tooltip("Custom CSV Ordner (leer = Application.persistentDataPath)")]
     public string customCsvFolder = "";
 
-    [Header("User Info")]
-    [Tooltip("User ID fuer CSV")]
-    public string userId = "VR_User_001";
-
-    [Tooltip("Injury Level fuer CSV")]
-    public string injuryLevel = "None";
-
     [Header("Debug")]
     public bool showDebugLogs = true;
+
+    // User Info (aus AdminInfoPanel)
+    private string userId = "VR_Participant_001";
+    private string injuryLevel = "Normal";
+    private string testType = "Button_VR";
 
     // Test State
     private bool testRunning = false;
@@ -137,7 +135,20 @@ public class ButtonManager_VR : MonoBehaviour
             return;
         }
 
+        // User Info aus AdminInfoPanel holen
+        if (AdminInfoPanel.Instance != null)
+        {
+            userId = AdminInfoPanel.Instance.GetUserName();
+            injuryLevel = AdminInfoPanel.Instance.GetInjuryState();
+        }
+        else
+        {
+            Debug.LogWarning("AdminInfoPanel nicht gefunden - nutze Default Werte");
+        }
+
         Debug.Log($"<color=cyan>VR REAKTIONSTEST GESTARTET ({testDuration}s)</color>");
+        Debug.Log($"  User: {userId}");
+        Debug.Log($"  Injury: {injuryLevel}");
 
         testRunning = true;
         testStartTime = Time.time;
@@ -376,15 +387,16 @@ public class ButtonManager_VR : MonoBehaviour
             using (StreamWriter writer = new StreamWriter(csvPath))
             {
                 // Header
-                writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Duration_sec,Trial_Nr,Target_Button,Pressed_Button,Reaction_Time_ms,Correct");
+                writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Test_Duration_sec,Trial_Nr,Target_Button,Pressed_Button,Reaction_Time_ms,Correct");
 
                 // Daten
                 foreach (var result in results)
                 {
-                    string line = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8}",
+                    string line = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}",
                         DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         userId,
                         injuryLevel,
+                        testType,
                         testDuration,
                         result.trial,
                         result.targetButton,
@@ -434,20 +446,25 @@ public class ButtonManager_VR : MonoBehaviour
         GUILayout.BeginArea(new Rect(10, 10, 300, 400));
         GUILayout.BeginVertical("box");
 
-        GUILayout.Label("<b>VR BUTTON REACTION TEST</b>");
+        GUILayout.Label("<b>VR BUTTON TEST</b>");
         GUILayout.Space(10);
+
+        // User Info aus AdminInfoPanel anzeigen
+        if (AdminInfoPanel.Instance != null)
+        {
+            GUILayout.Label($"User: {AdminInfoPanel.Instance.GetUserName()}");
+            GUILayout.Label($"Injury: {AdminInfoPanel.Instance.GetInjuryState()}");
+            GUILayout.Space(10);
+        }
 
         if (!testRunning)
         {
-            if (GUILayout.Button("START TEST", GUILayout.Height(50)))
+            GUILayout.Label($"Duration: {testDuration}s");
+
+            if (GUILayout.Button("START BUTTON TEST", GUILayout.Height(50)))
             {
                 StartReactionTest();
             }
-
-            GUILayout.Space(10);
-            GUILayout.Label($"Test Duration: {testDuration}s");
-            GUILayout.Label($"User ID: {userId}");
-            GUILayout.Label($"Injury Level: {injuryLevel}");
         }
         else
         {

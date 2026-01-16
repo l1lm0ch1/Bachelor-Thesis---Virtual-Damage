@@ -313,6 +313,55 @@ Transform:
   - {fileID: 950093406}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &349766079
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 349766081}
+  - component: {fileID: 349766080}
+  m_Layer: 0
+  m_Name: AdminInfoManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &349766080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349766079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee24b8855133546b9505115efafc55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AdminInfoPanel
+  nameInputField: {fileID: 1338345866}
+  normalToggle: {fileID: 834620599}
+  injuredToggle: {fileID: 1398193997}
+  defaultUserName: Participant_001
+  showDebugLogs: 1
+--- !u!4 &349766081
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 349766079}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1769.2913, y: 162.99998, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,8 +791,6 @@ MonoBehaviour:
   buttonHighlightMaterial: {fileID: 2100000, guid: 1c4868621a5869040b5c1c248f058df8, type: 2}
   customCsvFolder: C:/Users/Lilli/OneDrive/FH/5. Semester/BachelorArbeit/ReactionTest_UserData
   csvFileName: reaction_test_results.csv
-  userId: Test_User
-  injuryLevel: 0
   showDebugLogs: 1
 --- !u!1 &832575517
 GameObject:
@@ -794,6 +841,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &834620599 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9107611215934521119, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+  m_PrefabInstance: {fileID: 1013013646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
 --- !u!1 &950093405
 GameObject:
   m_ObjectHideFlags: 0
@@ -847,6 +905,111 @@ MonoBehaviour:
   showDebugAxes: 1
   showObjectLabels: 1
   showDebugLogs: 1
+--- !u!1001 &1013013646
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 117630969348819564, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_Name
+      value: AdminUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 418539124614338708, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -378.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2620983086651091126, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
 --- !u!1 &1112449728 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -1018664272722485354, guid: db121d22a4069664186156fe1cc68dd8, type: 3}
@@ -1173,6 +1336,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1320682014}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1338345866 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5516912535742774823, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+  m_PrefabInstance: {fileID: 1013013646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.InputField
 --- !u!1 &1392224402
 GameObject:
   m_ObjectHideFlags: 0
@@ -1209,6 +1383,17 @@ Transform:
   - {fileID: 1214754662}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1398193997 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8282335505837049273, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+  m_PrefabInstance: {fileID: 1013013646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Toggle
 --- !u!1 &1412943540 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5914173764048766335, guid: db121d22a4069664186156fe1cc68dd8, type: 3}
@@ -1265,15 +1450,8 @@ MonoBehaviour:
   slider1MaxUnityPosition: {x: -0.0306, y: 0.0495, z: -0.6967}
   slider2MinUnityPosition: {x: -0.0306, y: -0.051, z: -0.5815}
   slider2MaxUnityPosition: {x: -0.0306, y: -0.051, z: -0.6967}
-  testDuration: 20
-  delayBetweenTasks: 1.5
-  endPositionTolerance: 0.01
-  customCsvFolder: C:\Users\Lilli\OneDrive\FH\5. Semester\BachelorArbeit\ALL necessary
-    Scripts\CSV Files\Slider Data
-  csvFileName: slider_test_results.csv
-  userId: User_01
-  injuryLevel: 0
-  showDebugLogs: 1
+  showPreviewLogs: 1
+  smoothingSpeed: 0.1
 --- !u!1 &1657300775
 GameObject:
   m_ObjectHideFlags: 0
@@ -1853,7 +2031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9497e6f02e34bd043946732add01a4d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SortingTaskManager
-  feedbackManager: {fileID: 0}
+  feedbackManager: {fileID: 1680744533}
   cubeA1: {fileID: 8834021549389128365, guid: 857df3bd7322c16458b880fdf639ee89, type: 3}
   cubeA2: {fileID: 8834021549389128365, guid: f4dc0e0ff4ceb5f4eb9b76fcaedbf089, type: 3}
   cubeA3: {fileID: 8834021549389128365, guid: bcd5e5cec2a25784ea6816ff278cb62f, type: 3}
@@ -1865,8 +2043,6 @@ MonoBehaviour:
   customCsvFolder: C:\Users\Lilli\OneDrive\FH\5. Semester\BachelorArbeit\ALL necessary
     Scripts\CSV Files
   csvFileName: sorting_task_results.csv
-  userId: User_01
-  injuryLevel: 0
   validationDelay: 0.5
   showDebugLogs: 1
 --- !u!1001 &2136769561
@@ -1962,5 +2138,7 @@ SceneRoots:
   - {fileID: 279534235}
   - {fileID: 1392224403}
   - {fileID: 1320682014}
+  - {fileID: 349766081}
   - {fileID: 2009712797}
   - {fileID: 1273048792}
+  - {fileID: 1013013646}
