@@ -24,8 +24,8 @@ public class ZoneValidator : MonoBehaviour
     // Cubes die aktuell in Zone sind
     private HashSet<string> cubesInZone = new HashSet<string>();
 
-    // Reference zu Manager
-    private SortingTaskManager sortingManager;
+    // Reference zu Manager - GEÄNDERT: jetzt object statt SortingTaskManager
+    private object sortingManager;
 
     void Start()
     {
@@ -43,12 +43,14 @@ public class ZoneValidator : MonoBehaviour
             boxCollider.isTrigger = true;
         }
 
-        // Finde SortingTaskManager
-        sortingManager = FindFirstObjectByType<SortingTaskManager>();
+        // GEÄNDERT: Finde Physical ODER VR Manager
+        var physicalManager = FindFirstObjectByType<SortingTaskManager>();
+        var vrManager = FindFirstObjectByType<SortingTaskManager_VR>();
+        sortingManager = physicalManager != null ? (object)physicalManager : (object)vrManager;
 
         if (sortingManager == null)
         {
-            Debug.LogWarning($"Zone {zoneType}: SortingTaskManager nicht gefunden!");
+            Debug.LogWarning($"Zone {zoneType}: Weder SortingTaskManager noch SortingTaskManager_VR gefunden!");
         }
 
         Debug.Log($"<color=cyan>Zone {zoneType} initialisiert</color>");
@@ -59,33 +61,36 @@ public class ZoneValidator : MonoBehaviour
     /// </summary>
     void OnTriggerEnter(Collider other)
     {
-        // Prüfe ob es ein Cube ist
-        TrackedObject cube = other.GetComponent<TrackedObject>();
+        // BEIDE Cube-Typen unterstützen
+        var trackedCube = other.GetComponent<TrackedObject>();
+        var vrCube = other.GetComponent<VRInteractableCube>();
 
-        if (cube == null)
+        // Keiner gefunden? Return
+        if (trackedCube == null && vrCube == null)
             return;
 
-        // Prüfe ob Cube schon in Zone ist (Mehrfach-Trigger vermeiden)
-        if (cubesInZone.Contains(cube.objectKey))
+        // Hole Werte von dem Cube der existiert
+        string cubeKey = trackedCube != null ? trackedCube.objectKey : vrCube.objectKey;
+        string cubeType = trackedCube != null ? trackedCube.objectType : vrCube.objectType;
+
+        // Rest bleibt gleich
+        if (cubesInZone.Contains(cubeKey))
             return;
 
-        // Füge zu Liste hinzu
-        cubesInZone.Add(cube.objectKey);
-
-        // Prüfe ob korrekte Zone
-        bool correct = (cube.objectType == zoneType);
+        cubesInZone.Add(cubeKey);
+        bool correct = (cubeType == zoneType);
 
         if (showDebugLogs)
         {
             string status = correct ? "KORREKT" : "FALSCH";
-            Debug.Log($"<color=yellow>Zone {zoneType}: {cube.objectKey} ({cube.objectType}) -> {status}</color>");
+            Debug.Log($"<color=yellow>Zone {zoneType}: {cubeKey} ({cubeType}) -> {status}</color>");
         }
 
-        // Benachrichtige Manager
-        if (sortingManager != null)
-        {
-            sortingManager.OnCubePlacedInZone(cube.objectKey, cube.objectType, zoneType, correct);
-        }
+        // Manager aufrufen (Pattern matching bleibt)
+        if (sortingManager is SortingTaskManager physical)
+            physical.OnCubePlacedInZone(cubeKey, cubeType, zoneType, correct);
+        else if (sortingManager is SortingTaskManager_VR vr)
+            vr.OnCubePlacedInZone(cubeKey, cubeType, zoneType, correct);
     }
 
     /// <summary>
@@ -108,10 +113,14 @@ public class ZoneValidator : MonoBehaviour
                 Debug.Log($"<color=gray>Zone {zoneType}: {cube.objectKey} verlassen</color>");
             }
 
-            // Optional: Benachrichtige Manager
-            if (sortingManager != null)
+            // GEÄNDERT: Pattern matching für beide Manager-Typen
+            if (sortingManager is SortingTaskManager physical)
             {
-                sortingManager.OnCubeLeftZone(cube.objectKey, zoneType);
+                physical.OnCubeLeftZone(cube.objectKey, zoneType);
+            }
+            else if (sortingManager is SortingTaskManager_VR vr)
+            {
+                vr.OnCubeLeftZone(cube.objectKey, zoneType);
             }
         }
     }

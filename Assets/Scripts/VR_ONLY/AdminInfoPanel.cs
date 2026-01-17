@@ -5,12 +5,10 @@ using UnityEngine.UI;
 /// ADMIN INFO PANEL
 /// ================
 /// Zentrale Info-Eingabe fuer alle Tests
-/// Nur Name + Injury State, KEIN Test-Start
-/// Wird von allen Test-Managern gelesen via AdminInfoPanel.Instance
+/// Nur Name + Injury State (wechselt auch Hand Materials)
 /// </summary>
 public class AdminInfoPanel : MonoBehaviour
 {
-    // Singleton Instance
     public static AdminInfoPanel Instance { get; private set; }
 
     [Header("UI Elements")]
@@ -22,6 +20,19 @@ public class AdminInfoPanel : MonoBehaviour
 
     [Tooltip("Toggle fuer Injured State")]
     public Toggle injuredToggle;
+
+    [Header("Hand Material Settings (Optional - fuer spaeter)")]
+    [Tooltip("Skinned Mesh Renderer der linken Hand (optional)")]
+    public SkinnedMeshRenderer leftHandMesh;
+
+    [Tooltip("Skinned Mesh Renderer der rechten Hand (optional)")]
+    public SkinnedMeshRenderer rightHandMesh;
+
+    [Tooltip("Hand Material fuer Normal State")]
+    public Material handMaterialNormal;
+
+    [Tooltip("Hand Material fuer Injured State")]
+    public Material handMaterialInjured;
 
     [Header("Default Values")]
     [Tooltip("Default Name wenn leer")]
@@ -36,7 +47,6 @@ public class AdminInfoPanel : MonoBehaviour
 
     void Awake()
     {
-        // Singleton Pattern
         if (Instance == null)
         {
             Instance = this;
@@ -71,8 +81,8 @@ public class AdminInfoPanel : MonoBehaviour
             injuredToggle.onValueChanged.AddListener(OnInjuredToggleChanged);
         }
 
-        // Initial Values
         UpdateCurrentValues();
+        ApplyHandMaterials();
 
         if (showDebugLogs)
         {
@@ -82,13 +92,9 @@ public class AdminInfoPanel : MonoBehaviour
 
     void Update()
     {
-        // Runtime Values aktualisieren
         UpdateCurrentValues();
     }
 
-    /// <summary>
-    /// Name Changed Callback
-    /// </summary>
     private void OnNameChanged(string value)
     {
         UpdateCurrentValues();
@@ -99,9 +105,6 @@ public class AdminInfoPanel : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Normal Toggle Changed
-    /// </summary>
     private void OnNormalToggleChanged(bool isOn)
     {
         if (isOn && injuredToggle != null)
@@ -110,6 +113,7 @@ public class AdminInfoPanel : MonoBehaviour
         }
 
         UpdateCurrentValues();
+        ApplyHandMaterials();
 
         if (showDebugLogs)
         {
@@ -117,9 +121,6 @@ public class AdminInfoPanel : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Injured Toggle Changed
-    /// </summary>
     private void OnInjuredToggleChanged(bool isOn)
     {
         if (isOn && normalToggle != null)
@@ -128,6 +129,7 @@ public class AdminInfoPanel : MonoBehaviour
         }
 
         UpdateCurrentValues();
+        ApplyHandMaterials();
 
         if (showDebugLogs)
         {
@@ -136,11 +138,39 @@ public class AdminInfoPanel : MonoBehaviour
     }
 
     /// <summary>
-    /// Update Current Values aus UI
+    /// Wende Hand Materials auf BEIDE Haende an
     /// </summary>
+    private void ApplyHandMaterials()
+    {
+        if (handMaterialNormal == null || handMaterialInjured == null)
+        {
+            if (showDebugLogs && (leftHandMesh != null || rightHandMesh != null))
+            {
+                Debug.Log("Hand Materials noch nicht zugewiesen");
+            }
+            return;
+        }
+
+        Material targetMaterial = (currentInjuryState == "Normal") ? handMaterialNormal : handMaterialInjured;
+
+        if (leftHandMesh != null)
+        {
+            leftHandMesh.material = targetMaterial;
+        }
+
+        if (rightHandMesh != null)
+        {
+            rightHandMesh.material = targetMaterial;
+        }
+
+        if (showDebugLogs && (leftHandMesh != null || rightHandMesh != null))
+        {
+            Debug.Log($"Hand Materials gewechselt: {currentInjuryState}");
+        }
+    }
+
     private void UpdateCurrentValues()
     {
-        // Name
         if (nameInputField != null)
         {
             currentUserName = string.IsNullOrEmpty(nameInputField.text)
@@ -152,7 +182,6 @@ public class AdminInfoPanel : MonoBehaviour
             currentUserName = defaultUserName;
         }
 
-        // Injury State
         if (normalToggle != null && normalToggle.isOn)
         {
             currentInjuryState = "Normal";
@@ -163,7 +192,6 @@ public class AdminInfoPanel : MonoBehaviour
         }
         else
         {
-            // Fallback
             currentInjuryState = "Normal";
             if (normalToggle != null)
             {
@@ -172,17 +200,11 @@ public class AdminInfoPanel : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// PUBLIC GETTER - User Name
-    /// </summary>
     public string GetUserName()
     {
         return currentUserName;
     }
 
-    /// <summary>
-    /// PUBLIC GETTER - Injury State
-    /// </summary>
     public string GetInjuryState()
     {
         return currentInjuryState;

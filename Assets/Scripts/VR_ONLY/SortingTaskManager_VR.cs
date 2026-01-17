@@ -289,44 +289,45 @@ public class SortingTaskManager_VR : MonoBehaviour
     }
 
     void OnGUI()
+{
+    if (showDebugLogs)
     {
-        if (showDebugLogs)
+        // GEÄNDERT: Position nach rechts verschoben (640 statt 10) + Höhe korrigiert (300 statt 20)
+        GUILayout.BeginArea(new Rect(10, 340, 300, 300));
+        GUILayout.BeginVertical("box");
+
+        GUILayout.Label("<b>Sorting Task VR (NICHT zeit-basiert)</b>");
+        GUILayout.Space(10);
+
+        if (AdminInfoPanel.Instance != null)
         {
-            GUILayout.BeginArea(new Rect(10, 10, 300, 20));
-            GUILayout.BeginVertical("box");
-
-            GUILayout.Label("<b>Sorting Task VR (NICHT zeit-basiert)</b>");
+            GUILayout.Label($"User: {AdminInfoPanel.Instance.GetUserName()}");
+            GUILayout.Label($"Injury: {AdminInfoPanel.Instance.GetInjuryState()}");
             GUILayout.Space(10);
-
-            if (AdminInfoPanel.Instance != null)
-            {
-                GUILayout.Label($"User: {AdminInfoPanel.Instance.GetUserName()}");
-                GUILayout.Label($"Injury: {AdminInfoPanel.Instance.GetInjuryState()}");
-                GUILayout.Space(10);
-            }
-
-            if (!testRunning)
-            {
-                if (GUILayout.Button("START SORTING TASK", GUILayout.Height(40)))
-                {
-                    StartSortingTask();
-                }
-            }
-            else
-            {
-                float elapsedTime = Time.time - testStartTime;
-                GUILayout.Label($"Zeit: {elapsedTime:F1}s");
-                GUILayout.Label($"Korrekt: {correctPlacements}/8");
-                GUILayout.Label($"Falsch: {incorrectPlacements}");
-
-                GUILayout.Space(10);
-                GUILayout.Label("Task endet wenn 8/8 korrekt platziert");
-            }
-
-            GUILayout.EndVertical();
-            GUILayout.EndArea();
         }
+
+        if (!testRunning)
+        {
+            if (GUILayout.Button("START SORTING TASK", GUILayout.Height(40)))
+            {
+                StartSortingTask();
+            }
+        }
+        else
+        {
+            float elapsedTime = Time.time - testStartTime;
+            GUILayout.Label($"Zeit: {elapsedTime:F1}s");
+            GUILayout.Label($"Korrekt: {correctPlacements}/8");
+            GUILayout.Label($"Falsch: {incorrectPlacements}");
+
+            GUILayout.Space(10);
+            GUILayout.Label("Task endet wenn 8/8 korrekt platziert");
+        }
+
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
     }
+}
 
     [ContextMenu("CSV Ordner oeffnen")]
     public void OpenCsvFolder()
