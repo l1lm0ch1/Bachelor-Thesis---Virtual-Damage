@@ -149,6 +149,20 @@ public class QuestionnaireManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Slider Value wurde geaendert
+    /// </summary>
+    public void OnSliderValueChanged(string questionId, int value)
+    {
+        // Speichere Antwort
+        answers[questionId] = value;
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"Slider: {questionId} = {value}");
+        }
+    }
+
     private void ShowPage(int pageIndex)
     {
         // Hide all
