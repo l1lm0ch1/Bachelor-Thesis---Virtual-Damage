@@ -21,6 +21,13 @@ public class AdminInfoPanel : MonoBehaviour
     [Tooltip("Toggle fuer Injured State")]
     public Toggle injuredToggle;
 
+    [Header("Questionnaire Settings")]
+    [Tooltip("Button zum Starten des Questionnaires")]
+    public Button startQuestionnaireButton;
+
+    [Tooltip("TestType fuer Questionnaire")]
+    public string currentTestType = "After_ButtonTest";
+
     [Header("Hand Material Settings (Optional - fuer spaeter)")]
     [Tooltip("Skinned Mesh Renderer der linken Hand (optional)")]
     public SkinnedMeshRenderer leftHandMesh;
@@ -79,6 +86,11 @@ public class AdminInfoPanel : MonoBehaviour
         {
             injuredToggle.isOn = false;
             injuredToggle.onValueChanged.AddListener(OnInjuredToggleChanged);
+        }
+
+        if (startQuestionnaireButton != null)
+        {
+            startQuestionnaireButton.onClick.AddListener(StartQuestionnaire);
         }
 
         UpdateCurrentValues();
@@ -197,6 +209,39 @@ public class AdminInfoPanel : MonoBehaviour
             {
                 normalToggle.isOn = true;
             }
+        }
+    }
+
+    /// <summary>
+    /// Starte Questionnaire mit aktuellem Test Type
+    /// </summary>
+    private void StartQuestionnaire()
+    {
+        if (QuestionnaireManager.Instance != null)
+        {
+            QuestionnaireManager.Instance.ShowQuestionnaire(currentTestType);
+
+            if (showDebugLogs)
+            {
+                Debug.Log($"<color=cyan>Questionnaire gestartet: {currentTestType}</color>");
+            }
+        }
+        else
+        {
+            Debug.LogError("QuestionnaireManager nicht gefunden!");
+        }
+    }
+
+    /// <summary>
+    /// Setze den Test Type (wird z.B. von Button Test / Sorting Test aufgerufen)
+    /// </summary>
+    public void SetCurrentTestType(string testType)
+    {
+        currentTestType = testType;
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"Test Type gesetzt: {testType}");
         }
     }
 

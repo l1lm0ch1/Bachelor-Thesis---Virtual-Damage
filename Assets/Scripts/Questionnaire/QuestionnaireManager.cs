@@ -5,14 +5,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Questionnaire Manager - Steuert alle 7 Fragebogen Pages
+/// Questionnaire Manager - Steuert alle Fragebogen Pages
 /// </summary>
 public class QuestionnaireManager : MonoBehaviour
 {
     public static QuestionnaireManager Instance { get; private set; }
 
     [Header("Pages")]
-    public GameObject[] pages; // 7 Page GameObjects
+    public GameObject[] pages; // 9 Page GameObjects
 
     [Header("Navigation")]
     public Button previousButton;
@@ -28,14 +28,13 @@ public class QuestionnaireManager : MonoBehaviour
 
     // State
     private int currentPageIndex = 0;
-    private bool isActive = false;
     private Dictionary<string, int> answers = new Dictionary<string, int>();
-    private Dictionary<string, List<QuestionnaireRadioButton>> radioButtonGroups = new Dictionary<string, List<QuestionnaireRadioButton>>();
+    private Dictionary<string, List<QuestionnaireToggle>> toggleGroups = new Dictionary<string, List<QuestionnaireToggle>>();
 
     // User Info
     private string userId;
     private string injuryLevel;
-    private string testType; // "After_ButtonTest", "After_SortingTest", etc.
+    private string testType;
 
     void Awake()
     {
@@ -52,7 +51,7 @@ public class QuestionnaireManager : MonoBehaviour
 
     void Start()
     {
-        // Navigation Buttons Setup
+        // Navigation Buttons
         if (previousButton != null)
             previousButton.onClick.AddListener(PreviousPage);
 
@@ -65,38 +64,32 @@ public class QuestionnaireManager : MonoBehaviour
         // Initial Hidden
         gameObject.SetActive(false);
 
-        // Register alle Radio Buttons
-        RegisterAllRadioButtons();
+        // Register alle Toggles
+        RegisterAllToggles();
     }
 
-    /// <summary>
-    /// Registriere alle Radio Buttons im System
-    /// </summary>
-    private void RegisterAllRadioButtons()
+    private void RegisterAllToggles()
     {
-        QuestionnaireRadioButton[] allButtons = GetComponentsInChildren<QuestionnaireRadioButton>(true);
+        QuestionnaireToggle[] allToggles = GetComponentsInChildren<QuestionnaireToggle>(true);
 
-        foreach (var button in allButtons)
+        foreach (var toggle in allToggles)
         {
-            if (!radioButtonGroups.ContainsKey(button.questionId))
+            if (!toggleGroups.ContainsKey(toggle.questionId))
             {
-                radioButtonGroups[button.questionId] = new List<QuestionnaireRadioButton>();
+                toggleGroups[toggle.questionId] = new List<QuestionnaireToggle>();
             }
-            radioButtonGroups[button.questionId].Add(button);
+            toggleGroups[toggle.questionId].Add(toggle);
         }
 
         if (showDebugLogs)
         {
-            Debug.Log($"Registriert: {radioButtonGroups.Count} Fragen mit {allButtons.Length} Radio Buttons");
+            Debug.Log($"Registriert: {toggleGroups.Count} Fragen mit {allToggles.Length} Toggles");
         }
     }
 
-    /// <summary>
-    /// Zeige Fragebogen - wird von AdminInfoPanel aufgerufen
-    /// </summary>
     public void ShowQuestionnaire(string testTypeId)
     {
-        // User Info holen
+        // User Info
         if (AdminInfoPanel.Instance != null)
         {
             userId = AdminInfoPanel.Instance.GetUserName();
@@ -107,17 +100,16 @@ public class QuestionnaireManager : MonoBehaviour
         currentPageIndex = 0;
         answers.Clear();
 
-        // Reset alle Buttons
-        foreach (var group in radioButtonGroups.Values)
+        // Reset alle Toggles
+        foreach (var group in toggleGroups.Values)
         {
-            foreach (var button in group)
+            foreach (var toggle in group)
             {
-                button.SetSelected(false);
+                toggle.SetToggleValue(false);
             }
         }
 
         gameObject.SetActive(true);
-        isActive = true;
         ShowPage(currentPageIndex);
 
         if (showDebugLogs)
@@ -127,16 +119,19 @@ public class QuestionnaireManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Radio Button wurde ausgewaehlt
+    /// Toggle wurde ausgewählt - deselect alle anderen in der Gruppe
     /// </summary>
-    public void OnRadioButtonSelected(string questionId, int value, QuestionnaireRadioButton selectedButton)
+    public void OnToggleSelected(string questionId, int value)
     {
         // Deselect alle anderen in der Gruppe
-        if (radioButtonGroups.ContainsKey(questionId))
+        if (toggleGroups.ContainsKey(questionId))
         {
-            foreach (var button in radioButtonGroups[questionId])
+            foreach (var toggle in toggleGroups[questionId])
             {
-                button.SetSelected(button == selectedButton);
+                if (toggle.value != value)
+                {
+                    toggle.SetToggleValue(false);
+                }
             }
         }
 
@@ -150,11 +145,10 @@ public class QuestionnaireManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Slider Value wurde geaendert
+    /// Slider wurde geändert
     /// </summary>
     public void OnSliderValueChanged(string questionId, int value)
     {
-        // Speichere Antwort
         answers[questionId] = value;
 
         if (showDebugLogs)
@@ -177,7 +171,7 @@ public class QuestionnaireManager : MonoBehaviour
             pages[pageIndex].SetActive(true);
         }
 
-        // Update Navigation Buttons
+        // Update Navigation
         if (previousButton != null)
             previousButton.interactable = (pageIndex > 0);
 
@@ -210,9 +204,7 @@ public class QuestionnaireManager : MonoBehaviour
     {
         ExportToCSV();
 
-        // Hide Questionnaire
         gameObject.SetActive(false);
-        isActive = false;
 
         if (showDebugLogs)
         {
@@ -236,13 +228,11 @@ public class QuestionnaireManager : MonoBehaviour
 
         using (StreamWriter writer = new StreamWriter(csvPath, true))
         {
-            // Header (nur wenn neu)
             if (!fileExists)
             {
                 writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Question_ID,Answer_Value");
             }
 
-            // Daten
             string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
             foreach (var answer in answers)
