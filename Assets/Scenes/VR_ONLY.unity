@@ -3022,6 +3022,18 @@ PrefabInstance:
       propertyPath: m_HandMeshRenderer
       value: 
       objectReference: {fileID: 331113779}
+    - target: {fileID: 1184725404012718441, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 6274045304639878564, guid: ad0e1d7d230d00347b4a03e5c9fe71fc, type: 3}
+    - target: {fileID: 1184725404012718441, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1184725404012718441, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 24fe8bc06f413024492bd318c70b7b26, type: 2}
     - target: {fileID: 1301278027045141824, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_Enabled
       value: 0
@@ -3043,6 +3055,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1486176369766985031, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1518645955966970851, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
@@ -3105,11 +3121,11 @@ PrefabInstance:
     - target: {fileID: 3707255535797615770, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_HandMeshRenderer
       value: 
-      objectReference: {fileID: -7511558181221131132, guid: ce3fbda04a3c67a4792e4445426f9a09, type: 3}
+      objectReference: {fileID: 1946319826}
     - target: {fileID: 3734454871926262481, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: -7835313584954960751, guid: 756565028b5d258428bd21316731aa63, type: 3}
+      objectReference: {fileID: -7835313584954960751, guid: 2391c8d7df698ae4ea104678d51ba24b, type: 3}
     - target: {fileID: 3734454871926262481, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_RootBone
       value: 
@@ -3126,11 +3142,31 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: -6478536213147159724, guid: 756565028b5d258428bd21316731aa63, type: 3}
+    - target: {fileID: 4474634296417459964, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4474634296417459965, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4474634296417459966, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4474634296417459967, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4581776918189889624, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4581776918189889625, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4581776918189889626, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
@@ -3158,6 +3194,22 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Hand
       objectReference: {fileID: 0}
+    - target: {fileID: 6428197243378387168, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6428197243378387169, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6428197243378387170, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6428197243378387171, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7916024111531247791, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_HandMeshRenderer
       value: 
@@ -3173,6 +3225,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1560547700}
   m_SourcePrefab: {fileID: 100100000, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+--- !u!137 &1946319826 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1184725404012718441, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+  m_PrefabInstance: {fileID: 1946319825}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1948058508 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 18097877395467360, guid: f544836df7f53184591a3c5ad79c8337, type: 3}
