@@ -1,16 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>
-/// SORTING TASK MANAGER VR - NICHT ZEIT-BASIERT
-/// Orientiert am originalen SortingTaskManager (Physical)
-/// Task endet wenn alle Objekte korrekt sortiert sind
-/// OHNE eigene ZoneValidator Klasse (nutzt separate ZoneValidator.cs)
-/// </summary>
 public class SortingTaskManager_VR : MonoBehaviour
 {
     [Header("References")]
@@ -27,34 +20,28 @@ public class SortingTaskManager_VR : MonoBehaviour
     public GameObject cubeB4;
 
     [Header("CSV Export")]
-    [Tooltip("Leer lassen fuer Default Path")]
-    public string customCsvFolder = "C:\\Users\\lilli\\Documents\\CSV Files\\Testing";
+    public string customCsvFolder = "";
     public string csvFileName = "sorting_vr_task_results.csv";
 
     [Header("Task Settings")]
-    [Tooltip("Wie lange muss Cube in Zone bleiben fuer Validation (Sekunden)")]
     public float validationDelay = 0.5f;
 
     [Header("Debug")]
     public bool showDebugLogs = true;
 
-    // User Info (aus AdminInfoPanel)
     private string userId = "Participant_001";
     private string injuryLevel = "Normal";
     private string testType = "Sorting_VR";
 
-    // Test State - NICHT zeit-basiert
     private bool testRunning = false;
     private float testStartTime;
     private int correctPlacements = 0;
     private int incorrectPlacements = 0;
 
-    // Cube tracking
     private Dictionary<string, GameObject> cubes = new Dictionary<string, GameObject>();
     private Dictionary<string, bool> cubeValidated = new Dictionary<string, bool>();
     private Dictionary<string, string> cubeCorrectZone = new Dictionary<string, string>();
 
-    // Events fuer CSV
     private List<SortingEvent> events = new List<SortingEvent>();
 
     void Start()
@@ -69,13 +56,11 @@ public class SortingTaskManager_VR : MonoBehaviour
 
     void SetupCubes()
     {
-        // A-Cubes
         if (cubeA1 != null) RegisterCube("A1", cubeA1, "A");
         if (cubeA2 != null) RegisterCube("A2", cubeA2, "A");
         if (cubeA3 != null) RegisterCube("A3", cubeA3, "A");
         if (cubeA4 != null) RegisterCube("A4", cubeA4, "A");
 
-        // B-Cubes
         if (cubeB1 != null) RegisterCube("B1", cubeB1, "B");
         if (cubeB2 != null) RegisterCube("B2", cubeB2, "B");
         if (cubeB3 != null) RegisterCube("B3", cubeB3, "B");
@@ -97,22 +82,16 @@ public class SortingTaskManager_VR : MonoBehaviour
             return;
         }
 
-        // User Info aus AdminInfoPanel holen
         if (AdminInfoPanel.Instance != null)
         {
             userId = AdminInfoPanel.Instance.GetUserName();
             injuryLevel = AdminInfoPanel.Instance.GetInjuryState();
             testType = AdminInfoPanel.Instance.GetTestType();
         }
-        else
-        {
-            Debug.LogWarning("AdminInfoPanel nicht gefunden - nutze Default Werte");
-        }
 
         Debug.Log($"<color=cyan>SORTING TASK VR GESTARTET</color>");
         Debug.Log($"  User: {userId}");
         Debug.Log($"  Injury: {injuryLevel}");
-        Debug.Log($"  Test Type: {testType}");
 
         testRunning = true;
         testStartTime = Time.time;
@@ -120,7 +99,6 @@ public class SortingTaskManager_VR : MonoBehaviour
         incorrectPlacements = 0;
         events.Clear();
 
-        // Reset alle Cubes
         foreach (var kvp in cubeValidated.Keys.ToArray())
         {
             cubeValidated[kvp] = false;
@@ -132,16 +110,11 @@ public class SortingTaskManager_VR : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Callback von ZoneValidator wenn Cube platziert wird
-    /// Diese Methode wird von deiner separaten ZoneValidator.cs aufgerufen
-    /// </summary>
     public void OnCubePlacedInZone(string cubeKey, string cubeType, string zoneType, bool correct)
     {
         if (!testRunning)
             return;
 
-        // Verhindere doppelte Validierung
         if (cubeValidated.ContainsKey(cubeKey) && cubeValidated[cubeKey])
         {
             if (showDebugLogs)
@@ -153,7 +126,6 @@ public class SortingTaskManager_VR : MonoBehaviour
 
         float elapsedTime = Time.time - testStartTime;
 
-        // Event speichern
         events.Add(new SortingEvent
         {
             cubeId = cubeKey,
@@ -172,7 +144,6 @@ public class SortingTaskManager_VR : MonoBehaviour
                 Debug.Log($"<color=green>KORREKT: {cubeKey} auf Zone {zoneType} ({correctPlacements}/8)</color>");
             }
 
-            // Visuelles Feedback
             if (feedbackManager != null && cubes.ContainsKey(cubeKey))
             {
                 feedbackManager.ShowCorrectFeedback(cubes[cubeKey]);
@@ -187,32 +158,25 @@ public class SortingTaskManager_VR : MonoBehaviour
                 Debug.Log($"<color=red>FALSCH: {cubeKey} auf Zone {zoneType}</color>");
             }
 
-            // Visuelles Feedback
             if (feedbackManager != null && cubes.ContainsKey(cubeKey))
             {
                 feedbackManager.ShowIncorrectFeedback(cubes[cubeKey]);
             }
         }
 
-        // Check ob Task fertig (alle 8 Cubes korrekt platziert)
         if (correctPlacements >= 8)
         {
             StartCoroutine(FinishTask());
         }
     }
 
-    /// <summary>
-    /// Optional: Callback wenn Cube Zone verlaesst
-    /// </summary>
     public void OnCubeLeftZone(string cubeKey, string zoneType)
     {
         // Optional: Handle cube removal
-        // Aktuell wird nichts gemacht wenn Cube Zone verlaesst
     }
 
     IEnumerator FinishTask()
     {
-        // Kurz warten damit letzte Feedback-Effekte sichtbar sind
         yield return new WaitForSeconds(0.5f);
 
         float totalTime = Time.time - testStartTime;
@@ -233,7 +197,11 @@ public class SortingTaskManager_VR : MonoBehaviour
     {
         CSVWriter writer = new CSVWriter(customCsvFolder, showDebugLogs);
 
-        // Konvertiere events in simple Tuples
+        if (AdminInfoPanel.Instance != null)
+        {
+            AdminInfoPanel.Instance.SetCSVPath(writer.FolderPath);
+        }
+
         List<(string, string, bool, float)> eventData = new List<(string, string, bool, float)>();
         foreach (var evt in events)
         {
@@ -242,55 +210,50 @@ public class SortingTaskManager_VR : MonoBehaviour
 
         float totalTime = Time.time - testStartTime;
 
-        // CSV Writer übernimmt ALLES!
         writer.WriteSortingTestCSV(userId, injuryLevel, testType, totalTime, correctPlacements, incorrectPlacements, eventData, csvFileName);
     }
 
     void OnGUI()
-{
-    if (showDebugLogs)
     {
-        // GEÄNDERT: Position nach rechts verschoben (640 statt 10) + Höhe korrigiert (300 statt 20)
-        GUILayout.BeginArea(new Rect(10, 340, 300, 300));
-        GUILayout.BeginVertical("box");
-
-        GUILayout.Label("<b>Sorting Task VR (NICHT zeit-basiert)</b>");
-        GUILayout.Space(10);
-
-        if (AdminInfoPanel.Instance != null)
+        if (showDebugLogs)
         {
-            GUILayout.Label($"User: {AdminInfoPanel.Instance.GetUserName()}");
-            GUILayout.Label($"Injury: {AdminInfoPanel.Instance.GetInjuryState()}");
+            GUILayout.BeginArea(new Rect(10, 340, 300, 300));
+            GUILayout.BeginVertical("box");
+
+            GUILayout.Label("<b>Sorting Task VR (NICHT zeit-basiert)</b>");
             GUILayout.Space(10);
-        }
 
-        if (!testRunning)
-        {
-            if (GUILayout.Button("START SORTING TASK", GUILayout.Height(40)))
+            if (AdminInfoPanel.Instance != null)
             {
-                StartSortingTask();
+                GUILayout.Label($"User: {AdminInfoPanel.Instance.GetUserName()}");
+                GUILayout.Label($"Injury: {AdminInfoPanel.Instance.GetInjuryState()}");
+                GUILayout.Space(10);
             }
-        }
-        else
-        {
-            float elapsedTime = Time.time - testStartTime;
-            GUILayout.Label($"Zeit: {elapsedTime:F1}s");
-            GUILayout.Label($"Korrekt: {correctPlacements}/8");
-            GUILayout.Label($"Falsch: {incorrectPlacements}");
 
-            GUILayout.Space(10);
-            GUILayout.Label("Task endet wenn 8/8 korrekt platziert");
-        }
+            if (!testRunning)
+            {
+                if (GUILayout.Button("START SORTING TASK", GUILayout.Height(40)))
+                {
+                    StartSortingTask();
+                }
+            }
+            else
+            {
+                float elapsedTime = Time.time - testStartTime;
+                GUILayout.Label($"Zeit: {elapsedTime:F1}s");
+                GUILayout.Label($"Korrekt: {correctPlacements}/8");
+                GUILayout.Label($"Falsch: {incorrectPlacements}");
 
-        GUILayout.EndVertical();
-        GUILayout.EndArea();
+                GUILayout.Space(10);
+                GUILayout.Label("Task endet wenn 8/8 korrekt platziert");
+            }
+
+            GUILayout.EndVertical();
+            GUILayout.EndArea();
+        }
     }
 }
-}
 
-/// <summary>
-/// Sorting Event Data
-/// </summary>
 [Serializable]
 public class SortingEvent
 {

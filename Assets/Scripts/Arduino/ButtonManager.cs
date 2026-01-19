@@ -460,15 +460,17 @@ public class ButtonManager : MonoBehaviour
     {
         CSVWriter writer = new CSVWriter(customCsvFolder, showDebugLogs);
 
-        // Konvertiere results in simple Tuples
-        // ACHTUNG: ButtonManager (Physical) hat andere Result-Struktur!
+        if (AdminInfoPanel.Instance != null)
+        {
+            AdminInfoPanel.Instance.SetCSVPath(writer.FolderPath);
+        }
+
         List<(int, int, int, float, bool, float)> data = new List<(int, int, int, float, bool, float)>();
         foreach (var result in results)
         {
             data.Add((result.trial, result.targetButton, result.pressedButton, result.reactionTimeMs, result.correct, result.timestamp));
         }
 
-        // CSV Writer übernimmt ALLES!
         writer.WriteButtonTestCSV(userId, injuryLevel, testType, testDuration, data, csvFileName);
     }
 
