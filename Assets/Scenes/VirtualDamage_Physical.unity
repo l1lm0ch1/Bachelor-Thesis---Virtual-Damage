@@ -460,6 +460,16 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1567344731}
   m_SourcePrefab: {fileID: 100100000, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+--- !u!137 &1142574937 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1184725404012718441, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+  m_PrefabInstance: {fileID: 1142574936}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &1142574938 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3734454871926262481, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+  m_PrefabInstance: {fileID: 1142574936}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1198631738
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,8 +521,8 @@ MonoBehaviour:
   csvFileLocation: {fileID: 986444812}
   defaultTestType: Physical_ButtonTest
   startQuestionnaireButton: {fileID: 986444811}
-  leftHandMesh: {fileID: 0}
-  rightHandMesh: {fileID: 0}
+  leftHandMesh: {fileID: 1142574938}
+  rightHandMesh: {fileID: 1142574937}
   handMaterialNormal: {fileID: 0}
   handMaterialInjured: {fileID: 0}
   defaultUserName: Participant_001
