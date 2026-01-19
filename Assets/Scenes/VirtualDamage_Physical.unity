@@ -526,7 +526,7 @@ MonoBehaviour:
   handMaterialNormal: {fileID: 2100000, guid: 24fe8bc06f413024492bd318c70b7b26, type: 2}
   handMaterialInjured: {fileID: 2100000, guid: bf3cda94543ad8341ad22251ab435a08, type: 2}
   defaultUserName: Participant_001
-  showDebugLogs: 0
+  showDebugLogs: 1
 --- !u!1 &1228751048 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5126269882954400486, guid: eb8744735406cce49b3de8c89967ee10, type: 3}
@@ -848,6 +848,10 @@ PrefabInstance:
       propertyPath: cubeB4
       value: 
       objectReference: {fileID: 3288032147499653811, guid: b9bbbae6a48bb8e49a223e92e8f23dc2, type: 3}
+    - target: {fileID: 1032589807626414063, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: customCsvFolder
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2942571375758894042, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
       propertyPath: slider1Object
       value: 
@@ -856,6 +860,10 @@ PrefabInstance:
       propertyPath: slider2Object
       value: 
       objectReference: {fileID: 5880708309890539675}
+    - target: {fileID: 4055247488556351192, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: customCsvFolder
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4055247488556351192, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
       propertyPath: buttonNormalMaterial
       value: 
@@ -1181,7 +1189,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.0068, y: 0.0032, z: 0.0002}
+  m_Size: {x: 0.0068, y: 0.0032, z: 0.0007}
   m_Center: {x: 0.0000000037253196, y: -2.5618552e-14, z: -0.000012109894}
 --- !u!1001 &2284624785472822355
 PrefabInstance:
@@ -1400,7 +1408,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.0068, y: 0.0032, z: 0.0002}
+  m_Size: {x: 0.0068, y: 0.0032, z: 0.0007}
   m_Center: {x: -6.149597e-14, y: 5.3881182e-14, z: 0.000025469642}
 --- !u!1001 &5312592953448359514
 PrefabInstance:
