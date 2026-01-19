@@ -5,13 +5,13 @@ using UnityEngine.UI;
 /// ADMIN INFO PANEL
 /// ================
 /// Zentrale Info-Eingabe fuer alle Tests
-/// Nur Name + Injury State (wechselt auch Hand Materials)
+/// Name + Injury State + CSV Locations + Questionnaire Trigger
 /// </summary>
 public class AdminInfoPanel : MonoBehaviour
 {
     public static AdminInfoPanel Instance { get; private set; }
 
-    [Header("UI Elements")]
+    [Header("Participant Info")]
     [Tooltip("Input Field fuer Teilnehmer Namen")]
     public InputField nameInputField;
 
@@ -21,18 +21,33 @@ public class AdminInfoPanel : MonoBehaviour
     [Tooltip("Toggle fuer Injured State")]
     public Toggle injuredToggle;
 
+    [Header("CSV File Locations")]
+    [Tooltip("Input Field fuer ReactionTest CSV Pfad")]
+    public InputField reactionTestCSVInputField;
+
+    [Tooltip("Input Field fuer SortingTask CSV Pfad")]
+    public InputField sortingTaskCSVInputField;
+
+    [Tooltip("Input Field fuer Questionnaire CSV Pfad")]
+    public InputField questionnaireCSVInputField;
+
+    [Header("Test Configuration")]
+    [Tooltip("Input Field fuer Test Type")]
+    public InputField testTypeInputField;
+
+    [Header("Default Values")]
+    [Tooltip("Default Test Type wenn leer")]
+    public string defaultTestType = "Physical_ButtonTest";
+
     [Header("Questionnaire Settings")]
     [Tooltip("Button zum Starten des Questionnaires")]
     public Button startQuestionnaireButton;
 
-    [Tooltip("TestType fuer Questionnaire")]
-    public string currentTestType = "After_ButtonTest";
-
-    [Header("Hand Material Settings (Optional - fuer spaeter)")]
-    [Tooltip("Skinned Mesh Renderer der linken Hand (optional)")]
+    [Header("Hand Material Settings (Optional)")]
+    [Tooltip("Skinned Mesh Renderer der linken Hand")]
     public SkinnedMeshRenderer leftHandMesh;
 
-    [Tooltip("Skinned Mesh Renderer der rechten Hand (optional)")]
+    [Tooltip("Skinned Mesh Renderer der rechten Hand")]
     public SkinnedMeshRenderer rightHandMesh;
 
     [Tooltip("Hand Material fuer Normal State")]
@@ -45,12 +60,25 @@ public class AdminInfoPanel : MonoBehaviour
     [Tooltip("Default Name wenn leer")]
     public string defaultUserName = "Participant_001";
 
+    [Tooltip("Default CSV Dateiname fuer ReactionTest")]
+    public string defaultReactionTestCSV = "reaction_test_results.csv";
+
+    [Tooltip("Default CSV Dateiname fuer SortingTask")]
+    public string defaultSortingTaskCSV = "sorting_task_results.csv";
+
+    [Tooltip("Default CSV Dateiname fuer Questionnaire")]
+    public string defaultQuestionnaireCSV = "questionnaire_results.csv";
+
     [Header("Debug")]
     public bool showDebugLogs = false;
 
     // Current Values
     private string currentUserName;
     private string currentInjuryState;
+    private string currentReactionTestCSV;
+    private string currentSortingTaskCSV;
+    private string currentQuestionnaireCSV;
+    private string currentTestType;
 
     void Awake()
     {
@@ -68,11 +96,37 @@ public class AdminInfoPanel : MonoBehaviour
 
     void Start()
     {
-        // Input Field Setup
+        // Name Input Field Setup
         if (nameInputField != null)
         {
             nameInputField.text = defaultUserName;
             nameInputField.onValueChanged.AddListener(OnNameChanged);
+        }
+
+        // Test Type Input Field Setup - NEU
+        if (testTypeInputField != null)
+        {
+            testTypeInputField.text = defaultTestType;
+            testTypeInputField.onValueChanged.AddListener(OnTestTypeChanged);
+        }
+
+        // CSV Input Fields Setup
+        if (reactionTestCSVInputField != null)
+        {
+            reactionTestCSVInputField.text = defaultReactionTestCSV;
+            reactionTestCSVInputField.onValueChanged.AddListener(OnReactionTestCSVChanged);
+        }
+
+        if (sortingTaskCSVInputField != null)
+        {
+            sortingTaskCSVInputField.text = defaultSortingTaskCSV;
+            sortingTaskCSVInputField.onValueChanged.AddListener(OnSortingTaskCSVChanged);
+        }
+
+        if (questionnaireCSVInputField != null)
+        {
+            questionnaireCSVInputField.text = defaultQuestionnaireCSV;
+            questionnaireCSVInputField.onValueChanged.AddListener(OnQuestionnaireCSVChanged);
         }
 
         // Toggle Setup
@@ -88,6 +142,7 @@ public class AdminInfoPanel : MonoBehaviour
             injuredToggle.onValueChanged.AddListener(OnInjuredToggleChanged);
         }
 
+        // Questionnaire Button Setup
         if (startQuestionnaireButton != null)
         {
             startQuestionnaireButton.onClick.AddListener(StartQuestionnaire);
@@ -114,6 +169,46 @@ public class AdminInfoPanel : MonoBehaviour
         if (showDebugLogs)
         {
             Debug.Log($"Name geaendert: {currentUserName}");
+        }
+    }
+
+    private void OnReactionTestCSVChanged(string value)
+    {
+        UpdateCurrentValues();
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"ReactionTest CSV geaendert: {currentReactionTestCSV}");
+        }
+    }
+
+    private void OnSortingTaskCSVChanged(string value)
+    {
+        UpdateCurrentValues();
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"SortingTask CSV geaendert: {currentSortingTaskCSV}");
+        }
+    }
+
+    private void OnQuestionnaireCSVChanged(string value)
+    {
+        UpdateCurrentValues();
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"Questionnaire CSV geaendert: {currentQuestionnaireCSV}");
+        }
+    }
+
+    private void OnTestTypeChanged(string value)
+    {
+        UpdateCurrentValues();
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"Test Type geaendert: {currentTestType}");
         }
     }
 
@@ -149,9 +244,6 @@ public class AdminInfoPanel : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Wende Hand Materials auf BEIDE Haende an
-    /// </summary>
     private void ApplyHandMaterials()
     {
         if (handMaterialNormal == null || handMaterialInjured == null)
@@ -183,6 +275,7 @@ public class AdminInfoPanel : MonoBehaviour
 
     private void UpdateCurrentValues()
     {
+        // User Name
         if (nameInputField != null)
         {
             currentUserName = string.IsNullOrEmpty(nameInputField.text)
@@ -194,6 +287,53 @@ public class AdminInfoPanel : MonoBehaviour
             currentUserName = defaultUserName;
         }
 
+        // Test Type
+        if (testTypeInputField != null)
+        {
+            currentTestType = string.IsNullOrEmpty(testTypeInputField.text)
+                ? defaultTestType
+                : testTypeInputField.text;
+        }
+        else
+        {
+            currentTestType = defaultTestType;
+        }
+
+        // CSV Filenames
+        if (reactionTestCSVInputField != null)
+        {
+            currentReactionTestCSV = string.IsNullOrEmpty(reactionTestCSVInputField.text)
+                ? defaultReactionTestCSV
+                : reactionTestCSVInputField.text;
+        }
+        else
+        {
+            currentReactionTestCSV = defaultReactionTestCSV;
+        }
+
+        if (sortingTaskCSVInputField != null)
+        {
+            currentSortingTaskCSV = string.IsNullOrEmpty(sortingTaskCSVInputField.text)
+                ? defaultSortingTaskCSV
+                : sortingTaskCSVInputField.text;
+        }
+        else
+        {
+            currentSortingTaskCSV = defaultSortingTaskCSV;
+        }
+
+        if (questionnaireCSVInputField != null)
+        {
+            currentQuestionnaireCSV = string.IsNullOrEmpty(questionnaireCSVInputField.text)
+                ? defaultQuestionnaireCSV
+                : questionnaireCSVInputField.text;
+        }
+        else
+        {
+            currentQuestionnaireCSV = defaultQuestionnaireCSV;
+        }
+
+        // Injury State
         if (normalToggle != null && normalToggle.isOn)
         {
             currentInjuryState = "Normal";
@@ -212,9 +352,6 @@ public class AdminInfoPanel : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Starte Questionnaire mit aktuellem Test Type
-    /// </summary>
     private void StartQuestionnaire()
     {
         if (QuestionnaireManager.Instance != null)
@@ -232,9 +369,6 @@ public class AdminInfoPanel : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Setze den Test Type (wird z.B. von Button Test / Sorting Test aufgerufen)
-    /// </summary>
     public void SetCurrentTestType(string testType)
     {
         currentTestType = testType;
@@ -245,13 +379,35 @@ public class AdminInfoPanel : MonoBehaviour
         }
     }
 
+    // === PUBLIC GETTERS ===
+
     public string GetUserName()
     {
         return currentUserName;
     }
 
+    public string GetTestType()
+    {
+        return currentTestType;
+    }
+
     public string GetInjuryState()
     {
         return currentInjuryState;
+    }
+
+    public string GetReactionTestCSVFilename()
+    {
+        return currentReactionTestCSV;
+    }
+
+    public string GetSortingTaskCSVFilename()
+    {
+        return currentSortingTaskCSV;
+    }
+
+    public string GetQuestionnaireCSVFilename()
+    {
+        return currentQuestionnaireCSV;
     }
 }

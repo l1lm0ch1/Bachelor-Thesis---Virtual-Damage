@@ -38,7 +38,7 @@ public class ButtonManager_VR : MonoBehaviour
     public string csvFileName = "button_vr_test_results.csv";
 
     [Tooltip("Custom CSV Ordner (leer = Application.persistentDataPath)")]
-    public string customCsvFolder = "";
+    public string customCsvFolder = "C:\\Users\\lilli\\OneDrive\\FH\\5. Semester\\BachelorArbeit\\ReactionTest_UserData\\TESTING LILLI";
 
     [Header("Debug")]
     public bool showDebugLogs = true;
@@ -78,13 +78,21 @@ public class ButtonManager_VR : MonoBehaviour
         VRButton.OnButtonInteraction += OnButtonInteraction;
 
         // CSV Path bestimmen
+        string csvFilename = csvFileName; // Default Fallback
+
+        // Hole CSV Filename vom AdminInfoPanel
+        if (AdminInfoPanel.Instance != null)
+        {
+            csvFilename = AdminInfoPanel.Instance.GetReactionTestCSVFilename();
+        }
+
         if (string.IsNullOrEmpty(customCsvFolder))
         {
-            csvPath = Path.Combine(Application.persistentDataPath, csvFileName);
+            csvPath = Path.Combine(Application.persistentDataPath, csvFilename);
         }
         else
         {
-            csvPath = Path.Combine(customCsvFolder, csvFileName);
+            csvPath = Path.Combine(customCsvFolder, csvFilename);
 
             if (!Directory.Exists(customCsvFolder))
             {
@@ -96,7 +104,7 @@ public class ButtonManager_VR : MonoBehaviour
                 catch (Exception e)
                 {
                     Debug.LogError($"Kann CSV Ordner nicht erstellen: {e.Message}");
-                    csvPath = Path.Combine(Application.persistentDataPath, csvFileName);
+                    csvPath = Path.Combine(Application.persistentDataPath, csvFilename);
                 }
             }
         }
@@ -140,6 +148,7 @@ public class ButtonManager_VR : MonoBehaviour
         {
             userId = AdminInfoPanel.Instance.GetUserName();
             injuryLevel = AdminInfoPanel.Instance.GetInjuryState();
+            testType = AdminInfoPanel.Instance.GetTestType();
         }
         else
         {

@@ -32,7 +32,7 @@ public class ButtonManager : MonoBehaviour
 
     [Header("CSV Export")]
     [Tooltip("Leer lassen fuer Default Path (Application.persistentDataPath)")]
-    public string customCsvFolder = "";
+    public string customCsvFolder = "C:\\Users\\lilli\\OneDrive\\FH\\5. Semester\\BachelorArbeit\\ReactionTest_UserData\\TESTING LILLI";
     public string csvFileName = "reaction_test_results.csv";
 
     [Header("Debug")]
@@ -190,6 +190,7 @@ public class ButtonManager : MonoBehaviour
         {
             userId = AdminInfoPanel.Instance.GetUserName();
             injuryLevel = AdminInfoPanel.Instance.GetInjuryState();
+            testType = AdminInfoPanel.Instance.GetTestType();
         }
         else
         {

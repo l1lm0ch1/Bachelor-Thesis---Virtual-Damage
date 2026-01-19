@@ -240,7 +240,20 @@ MonoBehaviour:
   nameInputField: {fileID: 1338345866}
   normalToggle: {fileID: 834620599}
   injuredToggle: {fileID: 1398193997}
+  reactionTestCSVInputField: {fileID: 0}
+  sortingTaskCSVInputField: {fileID: 0}
+  questionnaireCSVInputField: {fileID: 0}
+  testTypeInputField: {fileID: 0}
+  defaultTestType: Physical_ButtonTest
+  startQuestionnaireButton: {fileID: 0}
+  leftHandMesh: {fileID: 0}
+  rightHandMesh: {fileID: 0}
+  handMaterialNormal: {fileID: 0}
+  handMaterialInjured: {fileID: 0}
   defaultUserName: Participant_001
+  defaultReactionTestCSV: reaction_test_results.csv
+  defaultSortingTaskCSV: sorting_task_results.csv
+  defaultQuestionnaireCSV: questionnaire_results.csv
   showDebugLogs: 1
 --- !u!4 &349766081
 Transform:
@@ -688,6 +701,36 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1937350574}
   m_SourcePrefab: {fileID: 100100000, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
+--- !u!114 &705059827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013013647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70ee24b8855133546b9505115efafc55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AdminInfoPanel
+  nameInputField: {fileID: 1338345866}
+  normalToggle: {fileID: 834620599}
+  injuredToggle: {fileID: 1398193997}
+  reactionTestCSVInputField: {fileID: 1013013652}
+  sortingTaskCSVInputField: {fileID: 1013013651}
+  questionnaireCSVInputField: {fileID: 1013013650}
+  testTypeInputField: {fileID: 1013013649}
+  defaultTestType: Physical_ButtonTest
+  startQuestionnaireButton: {fileID: 1013013648}
+  leftHandMesh: {fileID: 0}
+  rightHandMesh: {fileID: 0}
+  handMaterialNormal: {fileID: 0}
+  handMaterialInjured: {fileID: 0}
+  defaultUserName: Participant_001
+  defaultReactionTestCSV: reaction_test_results.csv
+  defaultSortingTaskCSV: sorting_task_results.csv
+  defaultQuestionnaireCSV: questionnaire_results.csv
+  showDebugLogs: 0
 --- !u!1 &770758166
 GameObject:
   m_ObjectHideFlags: 0
@@ -873,12 +916,52 @@ PrefabInstance:
       value: AdminUI
       objectReference: {fileID: 0}
     - target: {fileID: 418539124614338708, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -1599.588
+      objectReference: {fileID: 0}
+    - target: {fileID: 418539124614338708, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0.4021
+      objectReference: {fileID: 0}
+    - target: {fileID: 418539124614338708, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -378.5
+      value: -0.20111084
+      objectReference: {fileID: 0}
+    - target: {fileID: 692262282497827179, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 390
+      objectReference: {fileID: 0}
+    - target: {fileID: 1174818851959452174, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 219
+      objectReference: {fileID: 0}
+    - target: {fileID: 1981344885427891985, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -3.0000153
       objectReference: {fileID: 0}
     - target: {fileID: 2620983086651091126, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
       value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4342764629946360020, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -58
+      objectReference: {fileID: 0}
+    - target: {fileID: 4799249205113627143, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 291.90002
+      objectReference: {fileID: 0}
+    - target: {fileID: 5762293296853756459, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 452
+      objectReference: {fileID: 0}
+    - target: {fileID: 6495935882227084968, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -121.000015
+      objectReference: {fileID: 0}
+    - target: {fileID: 6809568127140997942, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 337.00003
       objectReference: {fileID: 0}
     - target: {fileID: 6934517954033054667, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
       propertyPath: m_Pivot.x
@@ -960,11 +1043,90 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7659752791264029794, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -250.00002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7911983941337405950, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 509
+      objectReference: {fileID: 0}
+    - target: {fileID: 8921747615313996275, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -176.00002
+      objectReference: {fileID: 0}
+    - target: {fileID: 9056007066292227302, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -305
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 117630969348819564, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 705059827}
   m_SourcePrefab: {fileID: 100100000, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+--- !u!1 &1013013647 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 117630969348819564, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+  m_PrefabInstance: {fileID: 1013013646}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1013013648 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6596432287151687620, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+  m_PrefabInstance: {fileID: 1013013646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &1013013649 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7222256458127808254, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+  m_PrefabInstance: {fileID: 1013013646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.InputField
+--- !u!114 &1013013650 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8223258547769628907, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+  m_PrefabInstance: {fileID: 1013013646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.InputField
+--- !u!114 &1013013651 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3318946998295783098, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+  m_PrefabInstance: {fileID: 1013013646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.InputField
+--- !u!114 &1013013652 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5387787513609663807, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
+  m_PrefabInstance: {fileID: 1013013646}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d199490a83bb2b844b9695cbf13b01ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.InputField
 --- !u!1 &1112449728 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -1018664272722485354, guid: db121d22a4069664186156fe1cc68dd8, type: 3}

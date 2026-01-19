@@ -11,6 +11,9 @@ public class QuestionnaireManager : MonoBehaviour
 {
     public static QuestionnaireManager Instance { get; private set; }
 
+    [Header("UI Container")]
+    public GameObject questionnaireCanvas;
+
     [Header("Pages")]
     public GameObject[] pages; // 9 Page GameObjects
 
@@ -21,7 +24,7 @@ public class QuestionnaireManager : MonoBehaviour
 
     [Header("CSV Settings")]
     public string csvFileName = "questionnaire_results.csv";
-    public string customCsvFolder = "";
+    public string customCsvFolder = "C:\\Users\\lilli\\OneDrive\\FH\\5. Semester\\BachelorArbeit\\ReactionTest_UserData\\TESTING LILLI";
 
     [Header("Debug")]
     public bool showDebugLogs = true;
@@ -61,8 +64,8 @@ public class QuestionnaireManager : MonoBehaviour
         if (submitButton != null)
             submitButton.onClick.AddListener(SubmitQuestionnaire);
 
-        // Initial Hidden
-        gameObject.SetActive(false);
+        if (questionnaireCanvas != null)
+            questionnaireCanvas.SetActive(false);
 
         // Register alle Toggles
         RegisterAllToggles();
@@ -109,7 +112,9 @@ public class QuestionnaireManager : MonoBehaviour
             }
         }
 
-        gameObject.SetActive(true);
+        if (questionnaireCanvas != null)
+            questionnaireCanvas.SetActive(true);
+
         ShowPage(currentPageIndex);
 
         if (showDebugLogs)
@@ -204,7 +209,8 @@ public class QuestionnaireManager : MonoBehaviour
     {
         ExportToCSV();
 
-        gameObject.SetActive(false);
+        if (questionnaireCanvas != null)
+            questionnaireCanvas.SetActive(false);
 
         if (showDebugLogs)
         {
@@ -215,15 +221,22 @@ public class QuestionnaireManager : MonoBehaviour
     private void ExportToCSV()
     {
         string folderPath = string.IsNullOrEmpty(customCsvFolder)
-            ? Application.persistentDataPath
-            : customCsvFolder;
+        ? Application.persistentDataPath
+        : customCsvFolder;
 
         if (!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);
         }
 
-        string csvPath = Path.Combine(folderPath, csvFileName);
+        // CSV Filename vom AdminInfoPanel holen
+        string csvFilename = csvFileName; // Default Fallback
+        if (AdminInfoPanel.Instance != null)
+        {
+            csvFilename = AdminInfoPanel.Instance.GetQuestionnaireCSVFilename();
+        }
+
+        string csvPath = Path.Combine(folderPath, csvFilename);
         bool fileExists = File.Exists(csvPath);
 
         using (StreamWriter writer = new StreamWriter(csvPath, true))

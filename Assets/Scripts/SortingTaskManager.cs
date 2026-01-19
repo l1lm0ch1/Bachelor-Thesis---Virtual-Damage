@@ -25,7 +25,7 @@ public class SortingTaskManager : MonoBehaviour
 
     [Header("CSV Export")]
     [Tooltip("Leer lassen fuer Default Path")]
-    public string customCsvFolder = "";
+    public string customCsvFolder = "C:\\Users\\lilli\\OneDrive\\FH\\5. Semester\\BachelorArbeit\\ReactionTest_UserData\\TESTING LILLI";
     public string csvFileName = "sorting_task_results.csv";
 
     [Header("Task Settings")]
@@ -82,15 +82,24 @@ public class SortingTaskManager : MonoBehaviour
         cubeObjects["B4"] = cubeB4;
 
         // CSV Paths
+        string csvFilename = csvFileName; // Default Fallback
+        string csvEventsFilename = "sorting_task_events.csv";
+
+        if (AdminInfoPanel.Instance != null)
+        {
+            csvFilename = AdminInfoPanel.Instance.GetSortingTaskCSVFilename();
+            csvEventsFilename = csvFilename.Replace(".csv", "_events.csv");
+        }
+
         if (string.IsNullOrEmpty(customCsvFolder))
         {
-            csvPath = Path.Combine(Application.persistentDataPath, csvFileName);
-            csvEventsPath = Path.Combine(Application.persistentDataPath, "sorting_task_events.csv");
+            csvPath = Path.Combine(Application.persistentDataPath, csvFilename);
+            csvEventsPath = Path.Combine(Application.persistentDataPath, csvEventsFilename);
         }
         else
         {
-            csvPath = Path.Combine(customCsvFolder, csvFileName);
-            csvEventsPath = Path.Combine(customCsvFolder, "sorting_task_events.csv");
+            csvPath = Path.Combine(customCsvFolder, csvFilename);
+            csvEventsPath = Path.Combine(customCsvFolder, csvEventsFilename);
 
             if (!Directory.Exists(customCsvFolder))
             {
@@ -101,8 +110,8 @@ public class SortingTaskManager : MonoBehaviour
                 catch (Exception e)
                 {
                     Debug.LogError($"Kann CSV Ordner nicht erstellen: {e.Message}");
-                    csvPath = Path.Combine(Application.persistentDataPath, csvFileName);
-                    csvEventsPath = Path.Combine(Application.persistentDataPath, "sorting_task_events.csv");
+                    csvPath = Path.Combine(Application.persistentDataPath, csvFilename);
+                    csvEventsPath = Path.Combine(Application.persistentDataPath, csvEventsFilename);
                 }
             }
         }
@@ -128,6 +137,7 @@ public class SortingTaskManager : MonoBehaviour
         {
             userId = AdminInfoPanel.Instance.GetUserName();
             injuryLevel = AdminInfoPanel.Instance.GetInjuryState();
+            testType = AdminInfoPanel.Instance.GetTestType();
         }
         else
         {
