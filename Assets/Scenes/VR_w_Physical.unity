@@ -698,65 +698,6 @@ MonoBehaviour:
   defaultSortingTaskCSV: sorting_task_results.csv
   defaultQuestionnaireCSV: questionnaire_results.csv
   showDebugLogs: 0
---- !u!1 &770758166
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 770758167}
-  - component: {fileID: 770758168}
-  m_Layer: 0
-  m_Name: ButtonManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &770758167
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 770758166}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1320682014}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &770758168
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 770758166}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5bab75bba93eef4c9f183e4b1122695, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ButtonManager
-  arduinoReceiver: {fileID: 1335341118}
-  virtualButtons:
-  - {fileID: 1837332879}
-  - {fileID: 1158029483}
-  - {fileID: 1112449728}
-  - {fileID: 451126686}
-  - {fileID: 1412943540}
-  testDuration: 60
-  delayBetweenTrials: 1
-  trialTimeout: 5
-  buttonNormalMaterial: {fileID: 2100000, guid: 27578551753c76043a35f1bda7d7bb4a, type: 2}
-  buttonHighlightMaterial: {fileID: 2100000, guid: 1c4868621a5869040b5c1c248f058df8, type: 2}
-  customCsvFolder: C:\Users\lilli\OneDrive\FH\5. Semester\BachelorArbeit\ReactionTest_UserData\Testing
-  csvFileName: Lilli_reaction_test_results.csv
-  showDebugLogs: 1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,7 +796,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2620983086651091126, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
       propertyPath: m_AdditionalShaderChannelsFlag
-      value: 25
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4342764629946360020, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1056,87 +997,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 18097877395467360, guid: f544836df7f53184591a3c5ad79c8337, type: 3}
   m_PrefabInstance: {fileID: 4673136486450468800}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1320682013
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1320682014}
-  m_Layer: 0
-  m_Name: ArduinoManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1320682014
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1320682013}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1335341119}
-  - {fileID: 770758167}
-  - {fileID: 2099496015}
-  - {fileID: 1415801244}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1335341117
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1335341119}
-  - component: {fileID: 1335341118}
-  m_Layer: 0
-  m_Name: ArduinoUDPReceiver
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1335341118
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335341117}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c67e9e4fff5064449afa5b5e6d082d2e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ArduinoUDPReceiver
-  udpPort: 5006
-  showDebugLogs: 1
---- !u!4 &1335341119
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335341117}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1320682014}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1338345866 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5516912535742774823, guid: f6db8aa59e08bee469954b29d556cab7, type: 3}
@@ -1200,59 +1060,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5914173764048766335, guid: db121d22a4069664186156fe1cc68dd8, type: 3}
   m_PrefabInstance: {fileID: 2009712797}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1415801243
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1415801244}
-  - component: {fileID: 1415801245}
-  m_Layer: 0
-  m_Name: SliderManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1415801244
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1415801243}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1320682014}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1415801245
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1415801243}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b6f1abb71ebe8440a04a95591a7f348, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SliderManager
-  arduinoReceiver: {fileID: 1335341118}
-  slider1Object: {fileID: 574285831}
-  slider2Object: {fileID: 1657300775}
-  slider1MinUnityPosition: {x: -0.0306, y: 0.0495, z: -0.5815}
-  slider1MaxUnityPosition: {x: -0.0306, y: 0.0495, z: -0.6967}
-  slider2MinUnityPosition: {x: -0.0306, y: -0.051, z: -0.5815}
-  slider2MaxUnityPosition: {x: -0.0306, y: -0.051, z: -0.6967}
-  showPreviewLogs: 1
-  smoothingSpeed: 0.1
 --- !u!1 &1657300775
 GameObject:
   m_ObjectHideFlags: 0
@@ -1476,55 +1283,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1680744531
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1680744532}
-  - component: {fileID: 1680744533}
-  m_Layer: 0
-  m_Name: VisualFeedbackManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1680744532
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1680744531}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 2099496015}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1680744533
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1680744531}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c33b5d1d2c07be42ab202b902759282, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::VisualFeedbackManager
-  correctMaterial: {fileID: 2100000, guid: d9d570e54fcd6a840b358e485fa524d4, type: 2}
-  incorrectMaterial: {fileID: 2100000, guid: 9c22a6f15f66a8345b5ff2437914fe69, type: 2}
-  incorrectBlinkDuration: 1
-  makeTransparentWhenCorrect: 1
-  transparentAlpha: 0.3
 --- !u!1 &1837332879 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -3215555783603854218, guid: db121d22a4069664186156fe1cc68dd8, type: 3}
@@ -1790,65 +1548,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 12, y: 5, z: 12}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!1 &2099496014
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2099496015}
-  - component: {fileID: 2099496016}
-  m_Layer: 0
-  m_Name: SortingTaskManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2099496015
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2099496014}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1680744532}
-  m_Father: {fileID: 1320682014}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2099496016
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2099496014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9497e6f02e34bd043946732add01a4d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SortingTaskManager
-  feedbackManager: {fileID: 1680744533}
-  cubeA1: {fileID: 8834021549389128365, guid: 857df3bd7322c16458b880fdf639ee89, type: 3}
-  cubeA2: {fileID: 8834021549389128365, guid: f4dc0e0ff4ceb5f4eb9b76fcaedbf089, type: 3}
-  cubeA3: {fileID: 8834021549389128365, guid: bcd5e5cec2a25784ea6816ff278cb62f, type: 3}
-  cubeA4: {fileID: 8834021549389128365, guid: 429fa87342def5947b99005bde98061f, type: 3}
-  cubeB1: {fileID: 8035786162572239619, guid: e0c4dddc866766e459e4bb02bb532cdc, type: 3}
-  cubeB2: {fileID: 8035786162572239619, guid: 22357c96ecfdfde449849cb032dcc1eb, type: 3}
-  cubeB3: {fileID: 8035786162572239619, guid: ad904b0268dbd044ca6d939b7dd38e40, type: 3}
-  cubeB4: {fileID: 8035786162572239619, guid: 7a03b90e213424e4c8e55d89bd7ed400, type: 3}
-  customCsvFolder: C:\Users\Lilli\OneDrive\FH\5. Semester\BachelorArbeit\ALL necessary
-    Scripts\CSV Files
-  csvFileName: sorting_task_results.csv
-  validationDelay: 0.5
-  showDebugLogs: 1
 --- !u!1001 &2136769561
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2045,6 +1744,91 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f544836df7f53184591a3c5ad79c8337, type: 3}
+--- !u!1001 &5209823451074295134
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2942571375758894042, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: slider1Object
+      value: 
+      objectReference: {fileID: 574285831}
+    - target: {fileID: 2942571375758894042, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: slider2Object
+      value: 
+      objectReference: {fileID: 1657300775}
+    - target: {fileID: 4055247488556351192, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: 'virtualButtons.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1837332879}
+    - target: {fileID: 4055247488556351192, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: 'virtualButtons.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1158029483}
+    - target: {fileID: 4055247488556351192, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: 'virtualButtons.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1112449728}
+    - target: {fileID: 4055247488556351192, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: 'virtualButtons.Array.data[3]'
+      value: 
+      objectReference: {fileID: 451126686}
+    - target: {fileID: 4055247488556351192, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: 'virtualButtons.Array.data[4]'
+      value: 
+      objectReference: {fileID: 1412943540}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4412928527980244833, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6369477609738604028, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: m_Name
+      value: ArduinoManager
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
 --- !u!1001 &6818827030003369557
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2112,7 +1896,7 @@ SceneRoots:
   - {fileID: 203318614}
   - {fileID: 6818827030003369557}
   - {fileID: 1392224403}
-  - {fileID: 1320682014}
+  - {fileID: 5209823451074295134}
   - {fileID: 349766081}
   - {fileID: 2009712797}
   - {fileID: 1013013646}

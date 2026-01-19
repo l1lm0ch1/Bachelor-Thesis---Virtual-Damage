@@ -32,7 +32,7 @@ public class ButtonManager : MonoBehaviour
 
     [Header("CSV Export")]
     [Tooltip("Leer lassen fuer Default Path (Application.persistentDataPath)")]
-    public string customCsvFolder = "C:\\Users\\lilli\\OneDrive\\FH\\5. Semester\\BachelorArbeit\\ReactionTest_UserData\\TESTING LILLI";
+    public string customCsvFolder = "C:\\Users\\lilli\\Documents\\CSV Files\\Testing";
     public string csvFileName = "reaction_test_results.csv";
 
     [Header("Debug")]
@@ -458,67 +458,18 @@ public class ButtonManager : MonoBehaviour
     /// </summary>
     private void ExportToCSV()
     {
-        if (results.Count == 0)
+        CSVWriter writer = new CSVWriter(customCsvFolder, showDebugLogs);
+
+        // Konvertiere results in simple Tuples
+        // ACHTUNG: ButtonManager (Physical) hat andere Result-Struktur!
+        List<(int, int, int, float, bool, float)> data = new List<(int, int, int, float, bool, float)>();
+        foreach (var result in results)
         {
-            Debug.LogWarning("Keine Ergebnisse zum Exportieren");
-            return;
+            data.Add((result.trial, result.targetButton, result.pressedButton, result.reactionTimeMs, result.correct, result.timestamp));
         }
 
-        try
-        {
-            bool fileExists = File.Exists(csvPath);
-
-            using (StreamWriter writer = new StreamWriter(csvPath, true))
-            {
-                // Header nur wenn File neu
-                if (!fileExists)
-                {
-                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Test_Duration_sec,Trial_Nr,Target_Button,Pressed_Button,Reaction_Time_ms,Correct");
-                }
-
-                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-                // Schreibe alle Trials
-                foreach (var result in results)
-                {
-                    string pressedButton = result.pressedButton > 0 ? result.pressedButton.ToString() : "TIMEOUT";
-                    string reactionTime = result.reactionTimeMs > 0 ? result.reactionTimeMs.ToString("F2") : "-1";
-
-                    string line = $"{timestamp},{userId},{injuryLevel},{testType},{testDuration},{result.trial},{result.targetButton},{pressedButton},{reactionTime},{result.correct}";
-                    writer.WriteLine(line);
-                }
-            }
-
-            // Berechne Statistiken für Log
-            int correctCount = 0;
-            float totalReactionTime = 0f;
-            int validTrials = 0;
-
-            foreach (var result in results)
-            {
-                if (result.correct)
-                    correctCount++;
-
-                if (result.reactionTimeMs > 0)
-                {
-                    totalReactionTime += result.reactionTimeMs;
-                    validTrials++;
-                }
-            }
-
-            float accuracy = (trialsCompleted > 0) ? (float)correctCount / trialsCompleted * 100f : 0f;
-            float avgReactionTime = (validTrials > 0) ? totalReactionTime / validTrials : 0f;
-
-            Debug.Log($"<color=green>CSV gespeichert: {csvPath}</color>");
-            Debug.Log($"  Trials: {trialsCompleted}");
-            Debug.Log($"  Accuracy: {accuracy:F1}%");
-            Debug.Log($"  Avg RT: {avgReactionTime:F0}ms");
-
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"Fehler beim CSV Export: {e.Message}");
-        }
+        // CSV Writer übernimmt ALLES!
+        writer.WriteButtonTestCSV(userId, injuryLevel, testType, testDuration, data, csvFileName);
     }
 
     /// <summary>
@@ -589,42 +540,16 @@ public class ButtonManager : MonoBehaviour
     }
 
     /// <summary>
-    /// CSV Ordner öffnen
+    /// Trial Result Data
     /// </summary>
-    [ContextMenu("CSV Ordner öffnen")]
-    public void OpenCsvFolder()
+    [Serializable]
+    public class TrialResult
     {
-        string folderPath = string.IsNullOrEmpty(customCsvFolder)
-            ? Application.persistentDataPath
-            : customCsvFolder;
-
-        if (Directory.Exists(folderPath))
-        {
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            System.Diagnostics.Process.Start("explorer.exe", folderPath);
-#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-                System.Diagnostics.Process.Start("open", folderPath);
-#endif
-
-            Debug.Log($"CSV Ordner geoeffnet: {folderPath}");
-        }
-        else
-        {
-            Debug.LogWarning($"Ordner existiert nicht: {folderPath}");
-        }
+        public int trial;
+        public int targetButton;
+        public int pressedButton;
+        public float reactionTimeMs;
+        public bool correct;
+        public float timestamp;  // Zeit seit Test Start
     }
-}
-
-/// <summary>
-/// Trial Result Data
-/// </summary>
-[Serializable]
-public class TrialResult
-{
-    public int trial;
-    public int targetButton;
-    public int pressedButton;
-    public float reactionTimeMs;
-    public bool correct;
-    public float timestamp;  // Zeit seit Test Start
 }

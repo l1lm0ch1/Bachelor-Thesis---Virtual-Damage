@@ -24,7 +24,7 @@ public class QuestionnaireManager : MonoBehaviour
 
     [Header("CSV Settings")]
     public string csvFileName = "questionnaire_results.csv";
-    public string customCsvFolder = "C:\\Users\\lilli\\OneDrive\\FH\\5. Semester\\BachelorArbeit\\ReactionTest_UserData\\TESTING LILLI";
+    public string customCsvFolder = "C:\\Users\\lilli\\Documents\\CSV Files\\Testing";
 
     [Header("Debug")]
     public bool showDebugLogs = true;
@@ -209,6 +209,8 @@ public class QuestionnaireManager : MonoBehaviour
     {
         ExportToCSV();
 
+        HandInteractorModeManager.Instance.SetFarInteractorEnabled(false);
+
         if (questionnaireCanvas != null)
             questionnaireCanvas.SetActive(false);
 
@@ -220,45 +222,9 @@ public class QuestionnaireManager : MonoBehaviour
 
     private void ExportToCSV()
     {
-        string folderPath = string.IsNullOrEmpty(customCsvFolder)
-        ? Application.persistentDataPath
-        : customCsvFolder;
+        CSVWriter writer = new CSVWriter(customCsvFolder, showDebugLogs);
 
-        if (!Directory.Exists(folderPath))
-        {
-            Directory.CreateDirectory(folderPath);
-        }
-
-        // CSV Filename vom AdminInfoPanel holen
-        string csvFilename = csvFileName; // Default Fallback
-        if (AdminInfoPanel.Instance != null)
-        {
-            csvFilename = AdminInfoPanel.Instance.GetQuestionnaireCSVFilename();
-        }
-
-        string csvPath = Path.Combine(folderPath, csvFilename);
-        bool fileExists = File.Exists(csvPath);
-
-        using (StreamWriter writer = new StreamWriter(csvPath, true))
-        {
-            if (!fileExists)
-            {
-                writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Question_ID,Answer_Value");
-            }
-
-            string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-            foreach (var answer in answers)
-            {
-                string line = $"{timestamp},{userId},{injuryLevel},{testType},{answer.Key},{answer.Value}";
-                writer.WriteLine(line);
-            }
-        }
-
-        if (showDebugLogs)
-        {
-            Debug.Log($"<color=green>CSV exportiert: {csvPath}</color>");
-            Debug.Log($"  Antworten: {answers.Count}");
-        }
+        // CSV Writer übernimmt ALLES!
+        writer.WriteQuestionnaireCSV(userId, injuryLevel, testType, answers, csvFileName);
     }
 }

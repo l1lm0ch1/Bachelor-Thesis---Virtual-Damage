@@ -1,96 +1,62 @@
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 /// <summary>
-/// VR Button f�r XR Hands - Collision-basiert
-/// 
-/// WICHTIG: Verwendet physische Kollision statt XR Interaction System
-/// - Hand ber�hrt Button = Input erkannt (OnCollisionEnter)
-/// - Kein Pinch Gesture n�tig
-/// - Button bleibt statisch (bewegt sich nicht)
-/// 
-/// Requirements:
-/// - Button GameObject: Rigidbody (Is Kinematic: true) + Collider (Is Trigger: false)
-/// - Hand GameObject: Rigidbody (Is Kinematic: false) + Collider + Tag "Hand"
-/// 
-/// Event System:
-/// - Sendet Events an ButtonManager_VR via static event OnButtonInteraction
-/// - Kompatibel mit bestehendem ButtonManager_VR.cs (keine �nderungen n�tig)
+/// VR Button mit XR Simple Interactable - HOVER-basierte Interaktion
+/// Funktioniert mit XR Hands Collision/Trigger
 /// </summary>
-[RequireComponent(typeof(Collider))]
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(XRSimpleInteractable))]
 public class VRButton : MonoBehaviour
 {
     [Header("Button Settings")]
-    [Tooltip("Button ID (1-5)")]
     public int buttonId = 1;
 
     [Header("Visual Feedback")]
-    [Tooltip("Button Renderer f�r Material Feedback")]
     public Renderer buttonRenderer;
-
-    [Tooltip("Material wenn Button normal ist")]
     public Material normalMaterial;
-
-    [Tooltip("Material wenn Button gedr�ckt ist")]
     public Material pressedMaterial;
 
-    [Header("Collision Settings")]
-    [Tooltip("Tag der Hand GameObjects (Standard: 'Hand')")]
-    public string handTag = "Hand";
+    [Header("Press Settings")]
+    public float pressDepth = 0.001f;
 
-    [Header("Press Animation (Optional)")]
-    [Tooltip("Visuelle Bewegung beim Dr�cken (Z-Achse in Metern)")]
-    public float pressDepth = 0.01f;
-
-    [Tooltip("Button visuell eindr�cken beim Press")]
-    public bool animatePress = true;
-
-    [Header("Audio Feedback (Optional)")]
-    [Tooltip("Audio Source f�r Button Sounds")]
-    public AudioSource audioSource;
-
-    [Tooltip("Sound beim Dr�cken")]
-    public AudioClip pressSound;
-
-    [Tooltip("Sound beim Loslassen")]
-    public AudioClip releaseSound;
+    [Tooltip("Wie lange muss Hand auf Button bleiben (Sekunden)")]
+    public float hoverPressDuration = 0.1f;
 
     [Header("Debug")]
-    public bool showDebugLogs = false;
+    public bool showDebugLogs = true;
 
-    // Events - Kompatibel mit ButtonManager_VR
+    // Events
     public delegate void ButtonEvent(int buttonId, string action);
     public static event ButtonEvent OnButtonInteraction;
 
-    // Private State
+    // Private
+    private XRSimpleInteractable interactable;
     private Vector3 startPosition;
     private bool isPressed = false;
-    private Rigidbody rb;
+    private bool isHovering = false;
+    private float hoverStartTime;
 
     void Awake()
     {
-        // Rigidbody Setup - Button ist statisch
-        rb = GetComponent<Rigidbody>();
-        if (rb != null)
+        if (showDebugLogs)
+            Debug.Log($"<color=yellow>VRButton {buttonId} Awake() gestartet</color>");
+
+        // XR Interactable Setup
+        interactable = GetComponent<XRSimpleInteractable>();
+
+        if (interactable == null)
         {
-            rb.isKinematic = true;  // Button bewegt sich NICHT
-            rb.useGravity = false;
-        }
-        else
-        {
-            Debug.LogError($"VRButton {buttonId}: Rigidbody Component fehlt!");
+            Debug.LogError($"<color=red>VRButton {buttonId}: XRSimpleInteractable FEHLT!</color>");
+            return;
         }
 
-        // Collider Check
-        Collider col = GetComponent<Collider>();
-        if (col != null)
-        {
-            col.isTrigger = false;  // Muss false sein f�r physische Collision!
-        }
-        else
-        {
-            Debug.LogError($"VRButton {buttonId}: Collider Component fehlt!");
-        }
+        // Events subscriben - NUR HOVER!
+        interactable.hoverEntered.AddListener(OnHoverEntered);
+        interactable.hoverExited.AddListener(OnHoverExited);
+
+        if (showDebugLogs)
+            Debug.Log($"<color=green>VRButton {buttonId}: Hover Events subscribed</color>");
 
         // Renderer Check
         if (buttonRenderer == null)
@@ -98,180 +64,174 @@ public class VRButton : MonoBehaviour
             buttonRenderer = GetComponent<Renderer>();
         }
 
-        // Start Position speichern f�r Animation
+        if (buttonRenderer == null)
+        {
+            Debug.LogError($"<color=red>VRButton {buttonId}: KEIN RENDERER!</color>");
+        }
+
+        // Start Position speichern
         startPosition = transform.localPosition;
 
-        // Initial Material setzen
+        // Initial Material
         if (buttonRenderer != null && normalMaterial != null)
         {
             buttonRenderer.material = normalMaterial;
         }
 
         if (showDebugLogs)
+            Debug.Log($"<color=cyan>VRButton {buttonId} INITIALISIERT!</color>");
+    }
+
+    void OnDestroy()
+    {
+        if (interactable != null)
         {
-            Debug.Log($"<color=cyan>VRButton {buttonId} initialisiert (Collision-basiert)</color>");
+            interactable.hoverEntered.RemoveListener(OnHoverEntered);
+            interactable.hoverExited.RemoveListener(OnHoverExited);
+        }
+    }
+
+    void Update()
+    {
+        // Check: Hover lange genug gehalten?
+        if (isHovering && !isPressed)
+        {
+            float hoverTime = Time.time - hoverStartTime;
+
+            if (hoverTime >= hoverPressDuration)
+            {
+                // Button wurde "gedrückt"
+                TriggerPress();
+            }
         }
     }
 
     /// <summary>
-    /// Hand kollidiert mit Button - Button wird gedr�ckt
+    /// Hover Enter - Hand berührt Button
     /// </summary>
-    void OnCollisionEnter(Collision collision)
+    private void OnHoverEntered(HoverEnterEventArgs args)
     {
-        // Check: Ist es eine Hand?
-        if (!collision.gameObject.CompareTag(handTag))
-            return;
+        if (showDebugLogs)
+        {
+            Debug.Log($"<color=magenta>═══════════════════════════════════</color>");
+            Debug.Log($"<color=magenta>VRButton {buttonId} HOVER ENTERED!</color>");
+            Debug.Log($"<color=magenta>═══════════════════════════════════</color>");
+            Debug.Log($"  Interactor: {args.interactorObject.transform.name}");
+        }
 
-        // Verhindere mehrfaches Triggern
+        isHovering = true;
+        hoverStartTime = Time.time;
+    }
+
+    /// <summary>
+    /// Hover Exit - Hand verlässt Button
+    /// </summary>
+    private void OnHoverExited(HoverExitEventArgs args)
+    {
+        if (showDebugLogs)
+        {
+            Debug.Log($"<color=yellow>VRButton {buttonId} HOVER EXITED!</color>");
+        }
+
+        isHovering = false;
+
+        // Falls Button gedrückt war -> release
         if (isPressed)
-            return;
+        {
+            TriggerRelease();
+        }
+    }
+
+    /// <summary>
+    /// Button Press triggern
+    /// </summary>
+    private void TriggerPress()
+    {
+        if (isPressed) return;
+
+        if (showDebugLogs)
+        {
+            Debug.Log($"<color=green>════════════════════════════════════</color>");
+            Debug.Log($"<color=green>VRButton {buttonId} PRESSED!</color>");
+            Debug.Log($"<color=green>════════════════════════════════════</color>");
+        }
 
         isPressed = true;
 
         // Visual Feedback
         PressButton();
 
-        // Audio Feedback
-        PlaySound(pressSound);
-
-        // Event senden an ButtonManager_VR
+        // Event senden
         OnButtonInteraction?.Invoke(buttonId, "pressed");
 
         if (showDebugLogs)
-        {
-            Debug.Log($"<color=green>VRButton {buttonId} PRESSED</color> (Collision mit {collision.gameObject.name})");
-        }
+            Debug.Log($"<color=green>VRButton {buttonId} Event gesendet: pressed</color>");
     }
 
     /// <summary>
-    /// Hand verl�sst Button - Button wird losgelassen
+    /// Button Release triggern
     /// </summary>
-    void OnCollisionExit(Collision collision)
+    private void TriggerRelease()
     {
-        // Check: Ist es eine Hand?
-        if (!collision.gameObject.CompareTag(handTag))
-            return;
+        if (!isPressed) return;
 
-        // Nur releasen wenn Button gedr�ckt war
-        if (!isPressed)
-            return;
+        if (showDebugLogs)
+            Debug.Log($"<color=yellow>VRButton {buttonId} RELEASED!</color>");
 
         isPressed = false;
 
         // Visual Feedback
         ReleaseButton();
 
-        // Audio Feedback
-        PlaySound(releaseSound);
-
-        // Event senden an ButtonManager_VR
+        // Event senden
         OnButtonInteraction?.Invoke(buttonId, "released");
 
         if (showDebugLogs)
-        {
-            Debug.Log($"<color=yellow>VRButton {buttonId} RELEASED</color>");
-        }
+            Debug.Log($"<color=yellow>VRButton {buttonId} Event gesendet: released</color>");
     }
 
-    /// <summary>
-    /// Visuelles Dr�cken - Material + Animation
-    /// </summary>
     private void PressButton()
     {
-        // Material �ndern
+        if (showDebugLogs)
+            Debug.Log($"<color=cyan>VRButton {buttonId} PressButton()</color>");
+
+        // Material wechseln
         if (buttonRenderer != null && pressedMaterial != null)
         {
             buttonRenderer.material = pressedMaterial;
         }
 
-        // Optional: Position �ndern (Button dr�ckt sich leicht ein)
-        if (animatePress)
-        {
-            Vector3 pressedPos = startPosition;
-            pressedPos.z -= pressDepth;
-            transform.localPosition = pressedPos;
-        }
+        // Button nach hinten bewegen
+        //Vector3 pressedPosition = startPosition;
+        //pressedPosition.y -= pressDepth;
+        //transform.localPosition = pressedPosition;
     }
 
-    /// <summary>
-    /// Visuelles Loslassen - Zur�ck zu Normal
-    /// </summary>
     private void ReleaseButton()
     {
-        // Material zur�ck zu Normal
+        if (showDebugLogs)
+            Debug.Log($"<color=cyan>VRButton {buttonId} ReleaseButton()</color>");
+
+        // Material zurück
         if (buttonRenderer != null && normalMaterial != null)
         {
             buttonRenderer.material = normalMaterial;
         }
 
-        // Position zur�ck zu Start
-        if (animatePress)
-        {
-            transform.localPosition = startPosition;
-        }
+        // Position zurück
+        transform.localPosition = startPosition;
     }
 
-    /// <summary>
-    /// Helper: Audio abspielen
-    /// </summary>
-    private void PlaySound(AudioClip clip)
+    public void SetMaterial(Material material)
     {
-        if (audioSource != null && clip != null)
+        if (buttonRenderer != null && material != null)
         {
-            audioSource.PlayOneShot(clip);
+            buttonRenderer.material = material;
         }
     }
 
-    /// <summary>
-    /// Manuelles Material setzen (f�r Test-Highlighting vom ButtonManager)
-    /// Wird von ButtonManager_VR aufgerufen um Target Button gr�n zu highlighten
-    /// </summary>
-    public void SetMaterial(Material mat)
-    {
-        if (buttonRenderer != null && mat != null)
-        {
-            buttonRenderer.material = mat;
-        }
-    }
-
-    /// <summary>
-    /// Material zur�cksetzen zu Normal
-    /// Wird von ButtonManager_VR aufgerufen nach Trial Ende
-    /// </summary>
     public void ResetMaterial()
     {
-        if (buttonRenderer != null && normalMaterial != null)
-        {
-            buttonRenderer.material = normalMaterial;
-        }
-
-        // Position auch zur�cksetzen falls Animation aktiv war
-        if (animatePress)
-        {
-            transform.localPosition = startPosition;
-        }
-
-        // State zur�cksetzen
-        isPressed = false;
-    }
-
-    /// <summary>
-    /// Validierung beim Setup - pr�ft ob alle Requirements erf�llt sind
-    /// </summary>
-    void OnValidate()
-    {
-        // Pr�fe Rigidbody
-        Rigidbody rb = GetComponent<Rigidbody>();
-        if (rb != null && !rb.isKinematic)
-        {
-            Debug.LogWarning($"VRButton {buttonId}: Rigidbody sollte Is Kinematic = TRUE sein (Button soll sich nicht bewegen)");
-        }
-
-        // Pr�fe Collider
-        Collider col = GetComponent<Collider>();
-        if (col != null && col.isTrigger)
-        {
-            Debug.LogWarning($"VRButton {buttonId}: Collider sollte Is Trigger = FALSE sein (f�r physische Collision)");
-        }
+        SetMaterial(normalMaterial);
     }
 }

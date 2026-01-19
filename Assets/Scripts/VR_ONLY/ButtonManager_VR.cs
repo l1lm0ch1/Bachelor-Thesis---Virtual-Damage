@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
 /// <summary>
-/// BUTTON MANAGER VR - PURE VR VERSION
-/// ====================================
-/// Reaktionstest mit VR Buttons (ohne Arduino/Physical Objects)
-/// Zeit-basierter Test mit zufaelligen Button-Tasks
+/// BUTTON MANAGER VR - HOVER-BASIERTE VERSION
+/// ==========================================
+/// Reaktionstest mit VR Buttons (Hover-Interaktion)
+/// Zeit-basierter Test mit zufälligen Button-Tasks
 /// </summary>
 public class ButtonManager_VR : MonoBehaviour
 {
@@ -17,10 +17,10 @@ public class ButtonManager_VR : MonoBehaviour
     public GameObject[] vrButtons = new GameObject[5];
 
     [Header("Button Materials")]
-    [Tooltip("Material fuer normalen Button State")]
+    [Tooltip("Material für normalen Button State")]
     public Material buttonNormalMaterial;
 
-    [Tooltip("Material fuer Target Button (gruen)")]
+    [Tooltip("Material für Target Button (grün)")]
     public Material buttonHighlightMaterial;
 
     [Header("Test Settings")]
@@ -38,7 +38,7 @@ public class ButtonManager_VR : MonoBehaviour
     public string csvFileName = "button_vr_test_results.csv";
 
     [Tooltip("Custom CSV Ordner (leer = Application.persistentDataPath)")]
-    public string customCsvFolder = "C:\\Users\\lilli\\OneDrive\\FH\\5. Semester\\BachelorArbeit\\ReactionTest_UserData\\TESTING LILLI";
+    public string customCsvFolder = "C:\\Users\\lilli\\Documents\\CSV Files\\Testing";
 
     [Header("Debug")]
     public bool showDebugLogs = true;
@@ -78,7 +78,7 @@ public class ButtonManager_VR : MonoBehaviour
         VRButton.OnButtonInteraction += OnButtonInteraction;
 
         // CSV Path bestimmen
-        string csvFilename = csvFileName; // Default Fallback
+        string csvFilename = csvFileName;
 
         // Hole CSV Filename vom AdminInfoPanel
         if (AdminInfoPanel.Instance != null)
@@ -109,7 +109,7 @@ public class ButtonManager_VR : MonoBehaviour
             }
         }
 
-        Debug.Log("<color=green>Button Manager VR initialisiert</color>");
+        Debug.Log("<color=green>Button Manager VR (HOVER) initialisiert</color>");
         Debug.Log($"  CSV Path: {csvPath}");
         Debug.Log($"  Test Duration: {testDuration}s");
 
@@ -125,7 +125,7 @@ public class ButtonManager_VR : MonoBehaviour
 
     void Update()
     {
-        // Update elapsed time waehrend Test
+        // Update elapsed time während Test
         if (testRunning)
         {
             testElapsedTime = Time.time - testStartTime;
@@ -139,7 +139,7 @@ public class ButtonManager_VR : MonoBehaviour
     {
         if (testRunning)
         {
-            Debug.LogWarning("Test laeuft bereits!");
+            Debug.LogWarning("Test läuft bereits!");
             return;
         }
 
@@ -155,7 +155,7 @@ public class ButtonManager_VR : MonoBehaviour
             Debug.LogWarning("AdminInfoPanel nicht gefunden - nutze Default Werte");
         }
 
-        Debug.Log($"<color=cyan>VR REAKTIONSTEST GESTARTET ({testDuration}s)</color>");
+        Debug.Log($"<color=cyan>VR REAKTIONSTEST GESTARTET (HOVER) ({testDuration}s)</color>");
         Debug.Log($"  User: {userId}");
         Debug.Log($"  Injury: {injuryLevel}");
 
@@ -193,23 +193,26 @@ public class ButtonManager_VR : MonoBehaviour
     {
         while (testElapsedTime < testDuration)
         {
-            // Check: Genug Zeit fuer weiteres Trial?
+            // Check: Genug Zeit für weiteres Trial?
             float timeRemaining = testDuration - testElapsedTime;
             if (timeRemaining < (trialTimeout + delayBetweenTrials))
             {
-                Debug.Log("Nicht genug Zeit fuer weiteres Trial");
+                Debug.Log("Nicht genug Zeit für weiteres Trial");
                 break;
             }
 
             // Trial starten
             trialsCompleted++;
 
-            // Zufaelligen Button waehlen (1-5)
+            // Zufälligen Button wählen (1-5)
             targetButton = UnityEngine.Random.Range(1, 6);
 
             if (showDebugLogs)
             {
-                Debug.Log($"Trial {trialsCompleted}: Button {targetButton} (Zeit: {testElapsedTime:F1}s/{testDuration}s)");
+                Debug.Log($"<color=cyan>═══════════════════════════════════</color>");
+                Debug.Log($"<color=cyan>Trial {trialsCompleted}: Button {targetButton}</color>");
+                Debug.Log($"<color=cyan>Zeit: {testElapsedTime:F1}s / {testDuration}s</color>");
+                Debug.Log($"<color=cyan>═══════════════════════════════════</color>");
             }
 
             // Button highlighten
@@ -232,7 +235,7 @@ public class ButtonManager_VR : MonoBehaviour
                 // Check: Gesamtzeit abgelaufen?
                 if (testElapsedTime >= testDuration)
                 {
-                    Debug.Log("Test Zeit abgelaufen waehrend Trial");
+                    Debug.Log("Test Zeit abgelaufen während Trial");
                     waitingForInput = false;
                     break;
                 }
@@ -258,10 +261,10 @@ public class ButtonManager_VR : MonoBehaviour
                 waitingForInput = false;
             }
 
-            // Alle Buttons zuruecksetzen
+            // Alle Buttons zurücksetzen
             ResetAllButtons();
 
-            // Delay vor naechstem Trial
+            // Delay vor nächstem Trial
             yield return new WaitForSeconds(delayBetweenTrials);
 
             // Update elapsed time nach Delay
@@ -285,7 +288,7 @@ public class ButtonManager_VR : MonoBehaviour
     /// </summary>
     private void OnButtonInteraction(int buttonId, string action)
     {
-        // PREVIEW MODE: Visuelles Feedback NUR ausserhalb vom Test
+        // PREVIEW MODE: Visuelles Feedback NUR außerhalb vom Test
         if (!testRunning)
         {
             if (action == "pressed")
@@ -294,16 +297,17 @@ public class ButtonManager_VR : MonoBehaviour
 
                 if (showDebugLogs)
                 {
-                    Debug.Log($"[PREVIEW] Button {buttonId} pressed");
+                    Debug.Log($"<color=magenta>[PREVIEW] Button {buttonId} pressed</color>");
                 }
             }
             else if (action == "released")
             {
                 ResetButton(buttonId);
             }
+            return;
         }
 
-        // TEST MODE: Recording nur waehrend Test
+        // TEST MODE: Recording nur während Test
         if (!waitingForInput || action != "pressed")
             return;
 
@@ -315,8 +319,12 @@ public class ButtonManager_VR : MonoBehaviour
 
         if (showDebugLogs)
         {
-            string status = correct ? "KORREKT" : "FALSCH";
-            Debug.Log($"[TEST] Button {buttonId} pressed: {reactionTime:F0}ms [{status}]");
+            string status = correct ? "<color=green>KORREKT ✓</color>" : "<color=red>FALSCH ✗</color>";
+            Debug.Log($"<color=cyan>══════════════════════════════════════════</color>");
+            Debug.Log($"<color=cyan>[TEST] Button {buttonId} pressed</color>");
+            Debug.Log($"<color=cyan>  Reaktionszeit: {reactionTime:F0}ms</color>");
+            Debug.Log($"<color=cyan>  Status: {status}</color>");
+            Debug.Log($"<color=cyan>══════════════════════════════════════════</color>");
         }
 
         // Ergebnis speichern
@@ -391,71 +399,26 @@ public class ButtonManager_VR : MonoBehaviour
     /// </summary>
     private void ExportToCSV()
     {
-        try
+        CSVWriter writer = new CSVWriter(customCsvFolder, showDebugLogs);
+
+        // Konvertiere results in simple Tuples
+        List<(int, int, int, float, bool, float)> data = new List<(int, int, int, float, bool, float)>();
+        foreach (var result in results)
         {
-            using (StreamWriter writer = new StreamWriter(csvPath))
-            {
-                // Header
-                writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Test_Duration_sec,Trial_Nr,Target_Button,Pressed_Button,Reaction_Time_ms,Correct");
-
-                // Daten
-                foreach (var result in results)
-                {
-                    string line = string.Format("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}",
-                        DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                        userId,
-                        injuryLevel,
-                        testType,
-                        testDuration,
-                        result.trial,
-                        result.targetButton,
-                        result.pressedButton,
-                        result.reactionTimeMs.ToString("F2"),
-                        result.correct ? "TRUE" : "FALSE"
-                    );
-
-                    writer.WriteLine(line);
-                }
-            }
-
-            Debug.Log($"<color=green>CSV exportiert: {csvPath}</color>");
-            Debug.Log($"  Trials gespeichert: {results.Count}");
-
-            // Statistik
-            int correctCount = 0;
-            float totalReactionTime = 0f;
-            int validTrials = 0;
-
-            foreach (var result in results)
-            {
-                if (result.correct)
-                    correctCount++;
-
-                if (result.reactionTimeMs > 0)
-                {
-                    totalReactionTime += result.reactionTimeMs;
-                    validTrials++;
-                }
-            }
-
-            float accuracy = results.Count > 0 ? (correctCount / (float)results.Count) * 100f : 0f;
-            float avgReactionTime = validTrials > 0 ? totalReactionTime / validTrials : 0f;
-
-            Debug.Log($"  Accuracy: {accuracy:F1}%");
-            Debug.Log($"  Avg Reaction Time: {avgReactionTime:F0}ms");
+            data.Add((result.trial, result.targetButton, result.pressedButton, result.reactionTimeMs, result.correct, result.timestamp));
         }
-        catch (Exception e)
-        {
-            Debug.LogError($"CSV Export Fehler: {e.Message}");
-        }
+
+        // CSV Writer übernimmt ALLES (inklusive AdminInfoPanel Filename!)
+        writer.WriteButtonTestCSV(userId, injuryLevel, testType, testDuration, data, csvFileName);
     }
 
     void OnGUI()
     {
+        // Position von Physical Button Manager
         GUILayout.BeginArea(new Rect(10, 10, 300, 400));
         GUILayout.BeginVertical("box");
 
-        GUILayout.Label("<b>VR BUTTON TEST</b>");
+        GUILayout.Label("<b>VR BUTTON TEST (HOVER)</b>");
         GUILayout.Space(10);
 
         // User Info aus AdminInfoPanel anzeigen

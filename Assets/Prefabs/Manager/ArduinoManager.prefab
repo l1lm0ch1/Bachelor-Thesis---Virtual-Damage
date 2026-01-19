@@ -1,0 +1,303 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3192139520850059371
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1646684653993548730}
+  - component: {fileID: 2942571375758894042}
+  m_Layer: 0
+  m_Name: SliderManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1646684653993548730
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3192139520850059371}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4412928527980244833}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2942571375758894042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3192139520850059371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b6f1abb71ebe8440a04a95591a7f348, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SliderManager
+  arduinoReceiver: {fileID: 4055122866390878020}
+  slider1Object: {fileID: 0}
+  slider2Object: {fileID: 0}
+  slider1MinUnityPosition: {x: -0.0306, y: 0.0495, z: -0.5815}
+  slider1MaxUnityPosition: {x: -0.0306, y: 0.0495, z: -0.6967}
+  slider2MinUnityPosition: {x: -0.0306, y: -0.051, z: -0.5815}
+  slider2MaxUnityPosition: {x: -0.0306, y: -0.051, z: -0.6967}
+  showPreviewLogs: 1
+  smoothingSpeed: 0.1
+--- !u!1 &4223004750150468522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 869180131937030472}
+  - component: {fileID: 8220243288589171340}
+  m_Layer: 0
+  m_Name: VisualFeedbackManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &869180131937030472
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4223004750150468522}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 258517083689371070}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8220243288589171340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4223004750150468522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c33b5d1d2c07be42ab202b902759282, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VisualFeedbackManager
+  correctMaterial: {fileID: 2100000, guid: d9d570e54fcd6a840b358e485fa524d4, type: 2}
+  incorrectMaterial: {fileID: 2100000, guid: 9c22a6f15f66a8345b5ff2437914fe69, type: 2}
+  incorrectBlinkDuration: 1
+  makeTransparentWhenCorrect: 1
+  transparentAlpha: 0.3
+--- !u!1 &6369477609738604028
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4412928527980244833}
+  m_Layer: 0
+  m_Name: ArduinoManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4412928527980244833
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6369477609738604028}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1192324778385195078}
+  - {fileID: 1721740983190802194}
+  - {fileID: 258517083689371070}
+  - {fileID: 1646684653993548730}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6658241478758347107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1721740983190802194}
+  - component: {fileID: 4055247488556351192}
+  m_Layer: 0
+  m_Name: ButtonManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1721740983190802194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6658241478758347107}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4412928527980244833}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4055247488556351192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6658241478758347107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5bab75bba93eef4c9f183e4b1122695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonManager
+  arduinoReceiver: {fileID: 4055122866390878020}
+  virtualButtons:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  testDuration: 60
+  delayBetweenTrials: 1
+  trialTimeout: 5
+  buttonNormalMaterial: {fileID: 2100000, guid: 27578551753c76043a35f1bda7d7bb4a, type: 2}
+  buttonHighlightMaterial: {fileID: 2100000, guid: 1c4868621a5869040b5c1c248f058df8, type: 2}
+  customCsvFolder: C:\Users\lilli\OneDrive\FH\5. Semester\BachelorArbeit\ReactionTest_UserData\Testing
+  csvFileName: Lilli_reaction_test_results.csv
+  showDebugLogs: 1
+--- !u!1 &6824545326477658698
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 258517083689371070}
+  - component: {fileID: 1032589807626414063}
+  m_Layer: 0
+  m_Name: SortingTaskManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &258517083689371070
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6824545326477658698}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 869180131937030472}
+  m_Father: {fileID: 4412928527980244833}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1032589807626414063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6824545326477658698}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9497e6f02e34bd043946732add01a4d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SortingTaskManager
+  feedbackManager: {fileID: 8220243288589171340}
+  cubeA1: {fileID: 8834021549389128365, guid: 857df3bd7322c16458b880fdf639ee89, type: 3}
+  cubeA2: {fileID: 8834021549389128365, guid: f4dc0e0ff4ceb5f4eb9b76fcaedbf089, type: 3}
+  cubeA3: {fileID: 8834021549389128365, guid: bcd5e5cec2a25784ea6816ff278cb62f, type: 3}
+  cubeA4: {fileID: 8834021549389128365, guid: 429fa87342def5947b99005bde98061f, type: 3}
+  cubeB1: {fileID: 8035786162572239619, guid: e0c4dddc866766e459e4bb02bb532cdc, type: 3}
+  cubeB2: {fileID: 8035786162572239619, guid: 22357c96ecfdfde449849cb032dcc1eb, type: 3}
+  cubeB3: {fileID: 8035786162572239619, guid: ad904b0268dbd044ca6d939b7dd38e40, type: 3}
+  cubeB4: {fileID: 8035786162572239619, guid: 7a03b90e213424e4c8e55d89bd7ed400, type: 3}
+  customCsvFolder: C:\Users\Lilli\OneDrive\FH\5. Semester\BachelorArbeit\ALL necessary
+    Scripts\CSV Files
+  csvFileName: sorting_task_results.csv
+  validationDelay: 0.5
+  showDebugLogs: 1
+--- !u!1 &7969645771888596824
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1192324778385195078}
+  - component: {fileID: 4055122866390878020}
+  m_Layer: 0
+  m_Name: ArduinoUDPReceiver
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1192324778385195078
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7969645771888596824}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4412928527980244833}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4055122866390878020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7969645771888596824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c67e9e4fff5064449afa5b5e6d082d2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArduinoUDPReceiver
+  udpPort: 5006
+  showDebugLogs: 1

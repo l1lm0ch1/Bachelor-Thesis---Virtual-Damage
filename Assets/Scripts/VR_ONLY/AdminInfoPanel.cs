@@ -354,6 +354,8 @@ public class AdminInfoPanel : MonoBehaviour
 
     private void StartQuestionnaire()
     {
+        HandInteractorModeManager.Instance.SetFarInteractorEnabled(true);
+
         if (QuestionnaireManager.Instance != null)
         {
             QuestionnaireManager.Instance.ShowQuestionnaire(currentTestType);

@@ -28,7 +28,7 @@ public class SortingTaskManager_VR : MonoBehaviour
 
     [Header("CSV Export")]
     [Tooltip("Leer lassen fuer Default Path")]
-    public string customCsvFolder = "C:\\Users\\lilli\\OneDrive\\FH\\5. Semester\\BachelorArbeit\\ReactionTest_UserData\\TESTING LILLI";
+    public string customCsvFolder = "C:\\Users\\lilli\\Documents\\CSV Files\\Testing";
     public string csvFileName = "sorting_vr_task_results.csv";
 
     [Header("Task Settings")]
@@ -231,96 +231,19 @@ public class SortingTaskManager_VR : MonoBehaviour
 
     void ExportToCSV()
     {
-        try
+        CSVWriter writer = new CSVWriter(customCsvFolder, showDebugLogs);
+
+        // Konvertiere events in simple Tuples
+        List<(string, string, bool, float)> eventData = new List<(string, string, bool, float)>();
+        foreach (var evt in events)
         {
-            // Folder Path bestimmen
-            string folderPath = string.IsNullOrEmpty(customCsvFolder)
-                ? Application.persistentDataPath
-                : customCsvFolder;
-
-            // Ordner erstellen wenn nicht existiert
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-                Debug.Log($"CSV Ordner erstellt: {folderPath}");
-            }
-
-            // CSV Filename vom AdminInfoPanel holen
-            string csvFilename = csvFileName; // Default Fallback
-            if (AdminInfoPanel.Instance != null)
-            {
-                csvFilename = AdminInfoPanel.Instance.GetSortingTaskCSVFilename();
-            }
-
-            // Summary CSV Path
-            string summaryPath = Path.Combine(folderPath, csvFilename);
-            bool fileExists = File.Exists(summaryPath);
-
-            // Summary CSV schreiben
-            using (StreamWriter writer = new StreamWriter(summaryPath, true))
-            {
-                if (!fileExists)
-                {
-                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Total_Time_sec,Correct_Placements,Incorrect_Placements,Total_Placements,Accuracy_Percent");
-                }
-
-                float totalTime = Time.time - testStartTime;
-                int totalPlacements = correctPlacements + incorrectPlacements;
-                float accuracy = totalPlacements > 0 ? (correctPlacements / (float)totalPlacements) * 100f : 0f;
-
-                string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                string line = $"{timestamp},{userId},{injuryLevel},{testType},{totalTime:F2},{correctPlacements},{incorrectPlacements},{totalPlacements},{accuracy:F2}";
-
-                writer.WriteLine(line);
-            }
-
-            Debug.Log($"<color=green>CSV gespeichert: {summaryPath}</color>");
-
-            // Events CSV
-            string eventsFileName = csvFilename.Replace(".csv", "_events.csv");
-            string eventsPath = Path.Combine(folderPath, eventsFileName);
-            bool eventsFileExists = File.Exists(eventsPath);
-
-            using (StreamWriter writer = new StreamWriter(eventsPath, true))
-            {
-                if (!eventsFileExists)
-                {
-                    writer.WriteLine("Timestamp,User_ID,Injury_Level,Test_Type,Event_Nr,Cube_ID,Target_Zone,Correct,Time_Since_Start_sec");
-                }
-
-                int eventNr = 1;
-                foreach (var evt in events)
-                {
-                    string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    string line = $"{timestamp},{userId},{injuryLevel},{testType},{eventNr},{evt.cubeId},{evt.targetZone},{evt.correct},{evt.timestamp:F3}";
-                    writer.WriteLine(line);
-                    eventNr++;
-                }
-            }
-
-            Debug.Log($"<color=green>Events CSV gespeichert: {eventsPath}</color>");
-
-            if (showDebugLogs)
-            {
-                Debug.Log($"Daten erfolgreich exportiert nach:\n  {summaryPath}\n  {eventsPath}");
-            }
+            eventData.Add((evt.cubeId, evt.targetZone, evt.correct, evt.timestamp));
         }
-        catch (UnauthorizedAccessException e)
-        {
-            Debug.LogError($"<color=red>FEHLER: Keine Berechtigung zum Schreiben!</color>\n{e.Message}");
-        }
-        catch (DirectoryNotFoundException e)
-        {
-            Debug.LogError($"<color=red>FEHLER: Verzeichnis nicht gefunden!</color>\n{e.Message}");
-        }
-        catch (IOException e)
-        {
-            Debug.LogError($"<color=red>FEHLER: IO Fehler beim Schreiben!</color>\n{e.Message}");
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"<color=red>FEHLER beim CSV Export!</color>\n{e.GetType().Name}: {e.Message}\n{e.StackTrace}");
-        }
+
+        float totalTime = Time.time - testStartTime;
+
+        // CSV Writer übernimmt ALLES!
+        writer.WriteSortingTestCSV(userId, injuryLevel, testType, totalTime, correctPlacements, incorrectPlacements, eventData, csvFileName);
     }
 
     void OnGUI()
@@ -363,28 +286,6 @@ public class SortingTaskManager_VR : MonoBehaviour
         GUILayout.EndArea();
     }
 }
-
-    [ContextMenu("CSV Ordner oeffnen")]
-    public void OpenCsvFolder()
-    {
-        string folderPath = string.IsNullOrEmpty(customCsvFolder)
-            ? Application.persistentDataPath
-            : customCsvFolder;
-
-        if (Directory.Exists(folderPath))
-        {
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-            System.Diagnostics.Process.Start("explorer.exe", folderPath);
-#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-            System.Diagnostics.Process.Start("open", folderPath);
-#endif
-            Debug.Log($"CSV Ordner geoeffnet: {folderPath}");
-        }
-        else
-        {
-            Debug.LogWarning($"Ordner existiert nicht: {folderPath}");
-        }
-    }
 }
 
 /// <summary>

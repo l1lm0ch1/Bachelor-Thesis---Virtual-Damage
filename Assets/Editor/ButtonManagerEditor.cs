@@ -43,12 +43,6 @@ public class ButtonManagerEditor : Editor
 
         EditorGUILayout.HelpBox($"Aktueller CSV Ordner:\n{currentFolder}", MessageType.Info);
 
-        // Ordner öffnen Button
-        if (GUILayout.Button("CSV Ordner im Explorer öffnen"))
-        {
-            manager.OpenCsvFolder();
-        }
-
         // Reset to Default Button
         if (!string.IsNullOrEmpty(manager.customCsvFolder))
         {
