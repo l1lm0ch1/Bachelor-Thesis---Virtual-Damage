@@ -884,7 +884,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: f7403b67b711dae4da17f69081096a76, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 24fe8bc06f413024492bd318c70b7b26, type: 2}
+      objectReference: {fileID: 2100000, guid: bf3cda94543ad8341ad22251ab435a08, type: 2}
     - target: {fileID: 919132149155446097, guid: f7403b67b711dae4da17f69081096a76, type: 3}
       propertyPath: m_Name
       value: RightHandMesh
