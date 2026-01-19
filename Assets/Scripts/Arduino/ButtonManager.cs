@@ -482,7 +482,7 @@ public class ButtonManager : MonoBehaviour
         if (showDebugLogs)
         {
             // Position RECHTS (SortingTaskManager ist links)
-            GUILayout.BeginArea(new Rect(Screen.width - 310, 10, 300, 200));
+            GUILayout.BeginArea(new Rect(Screen.width - 810, 10, 300, 200));
             GUILayout.BeginVertical("box");
 
             GUILayout.Label("<b>BUTTON TEST (Physical)</b>");
