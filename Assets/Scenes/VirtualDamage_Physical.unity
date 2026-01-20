@@ -719,6 +719,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3288032147499653811, guid: b9bbbae6a48bb8e49a223e92e8f23dc2, type: 3}
     - target: {fileID: 1032589807626414063, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: csvFileName
+      value: sorting_task_results_PHYS.csv
+      objectReference: {fileID: 0}
+    - target: {fileID: 1032589807626414063, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
       propertyPath: customCsvFolder
       value: 
       objectReference: {fileID: 0}
@@ -730,6 +734,10 @@ PrefabInstance:
       propertyPath: slider2Object
       value: 
       objectReference: {fileID: 5880708309890539675}
+    - target: {fileID: 4055247488556351192, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
+      propertyPath: csvFileName
+      value: reaction_test_results_PHYS.csv
+      objectReference: {fileID: 0}
     - target: {fileID: 4055247488556351192, guid: 6be15e57e12aca3488e6f9e3262905b3, type: 3}
       propertyPath: customCsvFolder
       value: 

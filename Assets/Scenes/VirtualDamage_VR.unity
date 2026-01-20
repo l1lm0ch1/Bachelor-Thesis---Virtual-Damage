@@ -1599,6 +1599,10 @@ PrefabInstance:
       value: Managers
       objectReference: {fileID: 0}
     - target: {fileID: 5034432962457026387, guid: 53e343c764076fd4ba4d82f73d7f0561, type: 3}
+      propertyPath: csvFileName
+      value: button_vr_test_results_VR.csv
+      objectReference: {fileID: 0}
+    - target: {fileID: 5034432962457026387, guid: 53e343c764076fd4ba4d82f73d7f0561, type: 3}
       propertyPath: testDuration
       value: 45
       objectReference: {fileID: 0}
@@ -1772,11 +1776,11 @@ PrefabInstance:
       objectReference: {fileID: 3288032147499653811, guid: 791b511eaada19e4792b14bb33fe7c6d, type: 3}
     - target: {fileID: 9166508243734286202, guid: 53e343c764076fd4ba4d82f73d7f0561, type: 3}
       propertyPath: csvFileName
-      value: 
+      value: sorting_task_results_VR.csv
       objectReference: {fileID: 0}
     - target: {fileID: 9166508243734286202, guid: 53e343c764076fd4ba4d82f73d7f0561, type: 3}
       propertyPath: customCsvFolder
-      value: C:\CSV Results\Testing
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
