@@ -971,10 +971,18 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3604590369898735772, guid: 09f49b57f59f15a4a9e4c9ff36366859, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3744813752656645332, guid: 09f49b57f59f15a4a9e4c9ff36366859, type: 3}
+      propertyPath: m_EnableFarCasting
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5814772938874793842, guid: 09f49b57f59f15a4a9e4c9ff36366859, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5858174577509452602, guid: 09f49b57f59f15a4a9e4c9ff36366859, type: 3}
+      propertyPath: m_EnableFarCasting
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7444844637804540617, guid: 09f49b57f59f15a4a9e4c9ff36366859, type: 3}
